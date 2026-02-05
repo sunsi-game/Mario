@@ -6,7 +6,7 @@
 
 Player::Player()
 	: super("@", Vector2::Zero, Color::Red),
-	playerMode(PlayerMode::Dot)
+	playerMode(PlayerMode::Normal)
 {
 	// 생성 위치 설정.
 	int xPosition = (Engine::Get().GetWidth() / 2) - (width / 2);

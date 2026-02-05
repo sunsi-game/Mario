@@ -40,8 +40,8 @@ void GameLevel::Draw()
 		// 플레이어 죽음 메시지 Renderer에 제출.
 		Renderer::Get().Submit("!Dead!", playerDeadPosition);
 
-		// 점수 보여주기.
-		ShowScore();
+		//// 점수 보여주기.
+		//ShowScore();
 
 		// 화면에 바로 표시.
 		Renderer::Get().PresentImmediately();
@@ -53,8 +53,8 @@ void GameLevel::Draw()
 		Engine::Get().QuitEngine();
 	}
 
-	// 점수 보여주기.
-	ShowScore();
+	//// 점수 보여주기.
+	//ShowScore();
 }
 
 void GameLevel::ProcessCollisionPlayerBulletAndEnemy()

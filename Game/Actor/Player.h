@@ -11,8 +11,8 @@ class Player : public Actor
 	enum class PlayerMode
 	{
 		None = -1,
-		Dot,
-		Render
+		Normal,
+		Pixel
 	};
 
 	RTTI_DECLARATIONS(Player, Actor)
