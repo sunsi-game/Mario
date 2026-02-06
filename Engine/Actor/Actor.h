@@ -85,6 +85,7 @@ namespace KhyMario
 
 		// 문자열 길이.
 		int width = 0;
+		int height = 0;
 
 		// 색상.
 		Color color = Color::White;

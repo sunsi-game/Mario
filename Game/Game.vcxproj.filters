@@ -74,5 +74,8 @@
     <ClInclude Include="Actor\Block.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Util\MathUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

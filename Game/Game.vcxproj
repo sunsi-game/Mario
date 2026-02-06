@@ -110,6 +110,7 @@
     <ClInclude Include="Actor\MouseTester.h" />
     <ClInclude Include="Actor\Player.h" />
     <ClInclude Include="Level\GameLevel.h" />
+    <ClInclude Include="Util\MathUtil.h" />
     <ClInclude Include="Util\Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

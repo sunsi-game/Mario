@@ -66,7 +66,11 @@ namespace KhyMario
 		// 싱글톤 접근 함수.
 		static Renderer& Get();
 
+		void SetCameraOffset(const Vector2& offset) { cameraOffset = offset; }
+		const Vector2& GetCameraOffset() const { return cameraOffset; }
+
 	private:
+		Vector2 cameraOffset = Vector2::Zero;
 
 		// 화면 지우는 함수.
 		void Clear();

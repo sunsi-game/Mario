@@ -46,6 +46,9 @@ namespace KhyMario
 		// 화면 높이 반환 함수.
 		inline int GetHeight() const { return setting.height; }
 
+		// 현재 메인 레벨 불러오기 함수.
+		inline Level* GetMainLevel() const { return mainLevel; }
+
 	protected:
 
 		// 정리 함수.

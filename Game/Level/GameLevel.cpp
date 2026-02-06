@@ -5,17 +5,22 @@
 #include "Actor/MouseTester.h"
 #include "Render/Renderer.h"
 #include "Engine/Engine.h"
+#include "Actor/Ground.h"
+#include <fstream>
+#include <string>
+#include <vector>
+#include <iostream>
+
 
 GameLevel::GameLevel()
 {
-	// Player 액터 추가.
-	AddNewActor(new Player());
-
 	// 적 생성기 추가.
 	AddNewActor(new EnemySpawner());
 
 	// Test: 마우스 테스터 추가.
 	AddNewActor(new MouseTester());
+
+	LoadMap("Map.txt");
 }
 
 GameLevel::~GameLevel()
@@ -26,14 +31,51 @@ void GameLevel::Tick(float deltaTime)
 {
 	super::Tick(deltaTime);
 
+	// 플레이어 찾기
+	Player* player = nullptr;
+	for (Actor* a : actors)
+	{
+		if (a && a->IsTypeOf<Player>())
+		{
+			player = a->As<Player>();
+			break;
+		}
+	}
+
+	if (player)
+	{
+		float target = player->GetPosition().x - followOffsetX; // 화면에서 플레이어 위치(왼쪽으로 20칸 정도)
+
+		if (target > cameraX) cameraX = target;      // 뒤로는 안 감
+		if (cameraX < 0) cameraX = 0;
+
+		// (옵션) 맵 끝에서 멈추기
+		float maxCamera = levelWidth - (float)Engine::Get().GetWidth();
+		if (maxCamera < 0) maxCamera = 0;
+		if (cameraX < 0) cameraX = 0;
+		if (cameraX > maxCamera) cameraX = maxCamera;
+	}
+
 	// 충돌 판정 처리.
 	ProcessCollisionPlayerBulletAndEnemy();
 	ProcessCollisionPlayerAndEnemyBullet();
+
+	if (player) debugPlayerX = (int)player->GetPosition().x;
 }
 
 void GameLevel::Draw()
 {
+	// 월드 그리기 시작 전에 카메라 적용
+	Renderer::Get().SetCameraOffset(Vector2((int)cameraX, 0));
+
 	super::Draw();
+
+	//Renderer::Get().SetCameraOffset(Vector2::Zero);
+	Renderer::Get().SetCameraOffset(Vector2((int)cameraX, 0));
+	
+	// sprintf_s(buf, "PlayerX=%d camX=%d maxCam=%d", (int)debugPlayerX, (int)cameraX, (int)(levelWidth - Engine::Get().GetWidth()));
+	// Renderer::Get().Submit(buf, Vector2(0, 0), Color::White, 999);
+
 
 	if (isPlayerDead)
 	{
@@ -139,6 +181,35 @@ void GameLevel::ProcessCollisionPlayerAndEnemyBullet()
 	}
 }
 
+std::vector<Actor*>& GameLevel::GetActors()
+{
+	return actors;
+}
+
+std::vector<Block*> GameLevel::GetSolidBlocks() const
+{
+	std::vector<Block*> blocks;
+	blocks.reserve(32);
+
+	for (Actor* const actor : actors)
+	{
+		if (actor && actor->IsTypeOf<Block>())
+		{
+			Block* b = actor->As<Block>();
+			if (b && b->IsSolid())
+				blocks.emplace_back(b);
+		}
+	}
+
+	return blocks;
+}
+
+float GameLevel::GetLevelWidth() const
+{
+	return levelWidth;
+}
+
+
 void GameLevel::ShowScore()
 {
 	sprintf_s(scoreString, 128, "Score: %d", score);
@@ -146,4 +217,118 @@ void GameLevel::ShowScore()
 		scoreString,
 		Vector2(0, Engine::Get().GetHeight() - 1)
 	);
+}
+
+void GameLevel::SpawnFromMapChar(char c, int x, int y)
+{
+}
+
+void GameLevel::LoadMap(const char* filename)
+{
+	// "../Assets/filename"
+	char path[2048] = {};
+	sprintf_s(path, 2048, "../Assets/%s", filename);
+
+	FILE* file = nullptr;
+	fopen_s(&file, path, "rt");
+
+	if (!file)
+	{
+		std::cerr << "Failed to open map file: " << path << "\n";
+		__debugbreak();
+		return;
+	}
+
+	fseek(file, 0, SEEK_END);
+	size_t fileSize = ftell(file);
+	rewind(file);
+
+	char* data = new char[fileSize + 1];
+	size_t readSize = fread(data, sizeof(char), fileSize, file);
+	data[readSize] = '\0';
+
+	// 레벨 폭 계산용
+	int currentLineWidth = 0;
+	int maxLineWidth = 0;
+	mapHeight = 0;
+
+	for (size_t i = 0; i < readSize; ++i)
+	{
+		char c = data[i];
+		if (c == '\r') continue;
+
+		if (c == '\n')
+		{
+			mapHeight++;
+			if (currentLineWidth > maxLineWidth)
+				maxLineWidth = currentLineWidth;
+
+			currentLineWidth = 0;
+			continue;
+		}
+
+		currentLineWidth++;
+	}
+
+	// 마지막 줄 반영
+	if (currentLineWidth > 0)
+	{
+		mapHeight++;
+		if (currentLineWidth > maxLineWidth)
+			maxLineWidth = currentLineWidth;
+	}
+
+	levelWidth = (float)maxLineWidth;
+
+	// ---- 2단계: y 오프셋 계산 ----
+	// 텍스트 맵의 마지막 줄이 화면 아래(-2)에 오도록
+	int groundY = Engine::Get().GetHeight() - 2;
+	int offsetY = groundY - (mapHeight - 1);
+
+	// ---- 3단계: 실제 Actor 생성 ----
+	Vector2 pos = Vector2(0, 0);
+	bool spawnedPlayer = false;
+
+	for (size_t i = 0; i < readSize; ++i)
+	{
+		char c = data[i];
+
+		if (c == '\r') continue;
+
+		if (c == '\n')
+		{
+			pos.y++;
+			pos.x = 0;
+			continue;
+		}
+
+		Vector2 worldPos(pos.x, pos.y + offsetY);
+
+		switch (c)
+		{
+		case '#':   // 플랫폼
+			AddNewActor(new Block(worldPos, 1, 1));
+			break;
+
+		case '=':   // 바닥
+			AddNewActor(new Ground(worldPos, 1, 1));
+			break;
+
+		case '@':   // 플레이어 시작 위치
+			if (!spawnedPlayer)
+			{
+				AddNewActor(new Player(worldPos));
+				spawnedPlayer = true;
+			}
+			break;
+
+		default:
+			break;
+		}
+
+		pos.x++;
+	}
+
+	delete[] data;
+	fclose(file);
 }

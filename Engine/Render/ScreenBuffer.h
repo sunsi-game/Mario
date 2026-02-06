@@ -5,11 +5,6 @@
 
 namespace KhyMario
 {
-	/*
-	* 작성자 : 장세윤
-	* 날짜   : 2026.02.03
-	* 내용   : 더블 버퍼링에 사용할 Console Output 핸들을 관리하는 클래스.
-	*/
 	class ScreenBuffer
 	{
 	public:

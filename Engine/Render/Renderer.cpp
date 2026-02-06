@@ -97,13 +97,13 @@ namespace KhyMario
 				continue;
 			}
 
-			// 세로 기준 화면 벗어났는지 확인.
-			if (command.position.y < 0
-				|| command.position.y >= screenSize.y)
-			{
-				continue;
-			}
+			Vector2 screenPos = command.position - cameraOffset;
 
+			// 세로 기준 화면 벗어났는지 확인
+			int y = (int)screenPos.y;
+			if (y < 0 || y >= screenSize.y) continue;
+
+			
 			// 화면에 그릴 문자열 길이.
 			const int length = static_cast<int>(strlen(command.text));
 
@@ -115,8 +115,8 @@ namespace KhyMario
 
 			// x좌표 기준으로 화면에서 벗어났는지 확인.
 			// 위치는 왼쪽 기준: "abcde"
-			const int startX = command.position.x;
-			const int endX = command.position.x + length - 1;
+			const int startX = (int)screenPos.x;
+			const int endX = startX + length - 1;
 
 			if (endX < 0 || startX >= screenSize.x)
 			{
@@ -135,8 +135,7 @@ namespace KhyMario
 				const int sourceIndex = x - startX;
 
 				// 프레임 (2차원 문자 배열) 인덱스.
-				const int index
-					= (command.position.y * screenSize.x) + x;
+				const int index = (y * screenSize.x) + x;
 
 				// 그리기 우선순위 비교.
 				if (frame->sortingOrderArray[index]
