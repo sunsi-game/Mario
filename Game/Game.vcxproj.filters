@@ -27,15 +27,6 @@
     <ClCompile Include="Util\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Actor\Enemy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor\EnemySpawner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor\EnemyDestroyEffect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Actor\MouseTester.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -43,6 +34,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Actor\Block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor\Goomba.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,15 +50,6 @@
     <ClInclude Include="Util\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Actor\Enemy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Actor\EnemySpawner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Actor\EnemyDestroyEffect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Actor\MouseTester.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -75,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util\MathUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor\Goomba.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

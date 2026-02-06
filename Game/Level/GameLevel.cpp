@@ -1,7 +1,5 @@
 #include "GameLevel.h"
 #include "Actor/Player.h"
-#include "Actor/Enemy.h"
-#include "Actor/EnemySpawner.h"
 #include "Actor/MouseTester.h"
 #include "Render/Renderer.h"
 #include "Engine/Engine.h"
@@ -14,9 +12,6 @@
 
 GameLevel::GameLevel()
 {
-	// 적 생성기 추가.
-	AddNewActor(new EnemySpawner());
-
 	// Test: 마우스 테스터 추가.
 	AddNewActor(new MouseTester());
 
@@ -97,40 +92,24 @@ void GameLevel::ProcessCollisionPlayerBulletAndEnemy()
 {
 	// 플레이어 탄약과 적 액터 필터링.
 	std::vector<Actor*> bullets;
-	std::vector<Enemy*> enemies;
-
-	// 액터 필터링.
-	for (Actor* const actor : actors)
-	{
-		if (actor->IsTypeOf<Enemy>())
-		{
-			enemies.emplace_back(actor->As<Enemy>());
-		}
-	}
-
-	// 판정 안해도 되는지 확인.
-	if (bullets.size() == 0 || enemies.size() == 0)
-	{
-		return;
-	}
 
 	// 충돌 판정.
-	for (Actor* const bullet : bullets)
-	{
-		for (Enemy* const enemy : enemies)
-		{
-			// AABB 겹침 판정.
-			if (bullet->TestIntersect(enemy))
-			{
-				enemy->OnDamaged();
-				bullet->Destroy();
-
-				// 점수 추가.
-				score += 1;
-				continue;
-			}
-		}
-	}
+	//for (Actor* const bullet : bullets)
+	//{
+	//	for (Enemy* const enemy : enemies)
+	//	{
+	//		// AABB 겹침 판정.
+	//		if (bullet->TestIntersect(enemy))
+	//		{
+	//			enemy->OnDamaged();
+	//			bullet->Destroy();
+	//
+	//			// 점수 추가.
+	//			score += 1;
+	//			continue;
+	//		}
+	//	}
+	//}
 }
 
 void GameLevel::ProcessCollisionPlayerAndEnemyBullet()
@@ -314,6 +293,17 @@ void GameLevel::LoadMap(const char* filename)
 				AddNewActor(new Player(worldPos));
 				spawnedPlayer = true;
 			}
+			break;
+
+		case 'P' : //파이브
+			break;
+
+		case 'G' :  // 굼바.
+			//AddNewActor(new Goomba(worldPos));
+			break;
+
+		case 'F' : // 파이프 꽃
+			//AddNewActor(new PiranhaPlant(worldPos));
 			break;
 
 		default:

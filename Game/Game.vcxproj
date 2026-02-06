@@ -91,9 +91,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actor\Block.cpp" />
-    <ClCompile Include="Actor\Enemy.cpp" />
-    <ClCompile Include="Actor\EnemyDestroyEffect.cpp" />
-    <ClCompile Include="Actor\EnemySpawner.cpp" />
+    <ClCompile Include="Actor\Goomba.cpp" />
     <ClCompile Include="Actor\Ground.cpp" />
     <ClCompile Include="Actor\MouseTester.cpp" />
     <ClCompile Include="Actor\Player.cpp" />
@@ -103,9 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor\Block.h" />
-    <ClInclude Include="Actor\Enemy.h" />
-    <ClInclude Include="Actor\EnemyDestroyEffect.h" />
-    <ClInclude Include="Actor\EnemySpawner.h" />
+    <ClInclude Include="Actor\Goomba.h" />
     <ClInclude Include="Actor\Ground.h" />
     <ClInclude Include="Actor\MouseTester.h" />
     <ClInclude Include="Actor\Player.h" />
