@@ -67,14 +67,8 @@ void GameLevel::Draw()
 {
 	// 월드 그리기 시작 전에 카메라 적용
 	Renderer::Get().SetCameraOffset(Vector2((int)cameraX, 0));
-
-	super::Draw();
-
-	//Renderer::Get().SetCameraOffset(Vector2::Zero);
-	Renderer::Get().SetCameraOffset(Vector2((int)cameraX, 0));
 	
-	// sprintf_s(buf, "PlayerX=%d camX=%d maxCam=%d", (int)debugPlayerX, (int)cameraX, (int)(levelWidth - Engine::Get().GetWidth()));
-	// Renderer::Get().Submit(buf, Vector2(0, 0), Color::White, 999);
+	super::Draw();
 
 
 	if (isPlayerDead)
@@ -96,7 +90,7 @@ void GameLevel::Draw()
 	}
 
 	//// 점수 보여주기.
-	//ShowScore();
+	ShowScore();
 }
 
 void GameLevel::ProcessCollisionPlayerBulletAndEnemy()

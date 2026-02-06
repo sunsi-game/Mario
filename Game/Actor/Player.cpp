@@ -142,14 +142,23 @@ void Player::ApplyGravityAndMove(float deltaTime)
 	position.y += vy * deltaTime; 
 	
 	// 3) 바닥(화면 아래) 충돌 처리.
-	const float groundY = static_cast<float>(Engine::Get().GetHeight()-2); 
-	if (position.y >= groundY) 
+	// const float groundY = static_cast<float>(Engine::Get().GetHeight()-2); 
+	/*if (position.y >= groundY) 
 	{ 
 		position.y = groundY - 1; 
 		vy = 0.0f; 
 		Grounded = true; 
 		return; 
-	} 
+	} */
+
+	// 화면 아래 내려가면 죽음
+	float killY = static_cast<float>(Engine::Get().GetHeight() + 3);
+	if (position.y > killY)
+	{
+		Destroy();
+		return;
+	}
+
 	
 	// 내려오는 중일 때만 블록 착지.
 	if (vy < 0) return; 

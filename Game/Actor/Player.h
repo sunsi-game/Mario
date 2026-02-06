@@ -51,7 +51,7 @@ private:
 	float gravity = 405.0f;
 
 	// 점프할 때 vy에 넣어주는 초기 속도.
-	float jumpVelocity = -18.0f;
+	float jumpVelocity = -40.0f;
 
 	// 바닥에 닿았는지 검사.
 	bool Grounded = false;
