@@ -18,7 +18,10 @@ public:
 	std::vector<Block*> GetSolidBlocks() const;
 	float GetLevelWidth() const;
 	float GetCameraX() const { return cameraX; }
+	
 
+	// Solid Block 목록 제공하기.
+	std::vector<Actor*>& GetActors();
 private:
 	virtual void Tick(float deltaTime) override;
 	virtual void Draw() override;
@@ -27,8 +30,6 @@ private:
 	void ProcessCollisionPlayerBulletAndEnemy();
 	void ProcessCollisionPlayerAndEnemyBullet();
 
-	// Solid Block 목록 제공하기.
-	std::vector<Actor*>& GetActors();
 
 	// 점수 보여주는 함수.
 	void ShowScore();

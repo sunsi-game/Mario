@@ -4,6 +4,8 @@
 #include "Render/Renderer.h"
 #include "Engine/Engine.h"
 #include "Actor/Ground.h"
+#include "Actor/Goomba.h"
+#include "Actor/PiranhaPlant.h"
 #include <fstream>
 #include <string>
 #include <vector>
@@ -295,15 +297,15 @@ void GameLevel::LoadMap(const char* filename)
 			}
 			break;
 
-		case 'P' : //파이브
+		case 'P' : //파이브.
 			break;
 
 		case 'G' :  // 굼바.
-			//AddNewActor(new Goomba(worldPos));
+			AddNewActor(new Goomba(worldPos));
 			break;
 
-		case 'F' : // 파이프 꽃
-			//AddNewActor(new PiranhaPlant(worldPos));
+		case 'F' : // 파이프 꽃.
+			AddNewActor(new PiranhaPlant(worldPos));
 			break;
 
 		default:

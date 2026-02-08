@@ -94,6 +94,7 @@
     <ClCompile Include="Actor\Goomba.cpp" />
     <ClCompile Include="Actor\Ground.cpp" />
     <ClCompile Include="Actor\MouseTester.cpp" />
+    <ClCompile Include="Actor\PiranhaPlant.cpp" />
     <ClCompile Include="Actor\Player.cpp" />
     <ClCompile Include="Level\GameLevel.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -104,6 +105,7 @@
     <ClInclude Include="Actor\Goomba.h" />
     <ClInclude Include="Actor\Ground.h" />
     <ClInclude Include="Actor\MouseTester.h" />
+    <ClInclude Include="Actor\PiranhaPlant.h" />
     <ClInclude Include="Actor\Player.h" />
     <ClInclude Include="Level\GameLevel.h" />
     <ClInclude Include="Util\MathUtil.h" />

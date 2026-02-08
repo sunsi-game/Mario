@@ -26,5 +26,8 @@ private:
 	// -1: 왼쪽, +1: 오른쪽
 	int dir = -1;
 
+	float vy = 0.0f;
+	float gravity = 25.0f;
+
 };
 
