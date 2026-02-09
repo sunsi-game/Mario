@@ -1,12 +1,13 @@
 #include "GameLevel.h"
 #include "Actor/Player.h"
-#include "Actor/MouseTester.h"
 #include "Render/Renderer.h"
 #include "Engine/Engine.h"
 #include "Actor/Ground.h"
 #include "Actor/Goomba.h"
 #include "Actor/PiranhaPlant.h"
 #include "Actor/Pipe.h"
+#include "Actor/FlagPole.h"
+
 #include <fstream>
 #include <string>
 #include <vector>
@@ -15,9 +16,6 @@
 
 GameLevel::GameLevel()
 {
-	// Test: 마우스 테스터 추가.
-	AddNewActor(new MouseTester());
-
 	LoadMap("Map.txt");
 }
 
@@ -309,47 +307,51 @@ void GameLevel::LoadMap(const char* filename)
 
 		case 'F':
 		{
-			// F가 찍힌 위치(월드 좌표)
-			Vector2 flowerMarkerPos = worldPos;
+			//// F가 찍힌 위치(월드 좌표).
+			//Vector2 flowerMarkerPos = worldPos;
 
-			// 아래로 내려가면서 Pipe(Block)를 찾는다
-			Pipe* foundPipe = nullptr;
+			//// 아래로 내려가면서 Pipe(Block)를 찾는다.
+			//Pipe* foundPipe = nullptr;
 
-			for (Actor* a : actors)
-			{
-				if (!a) continue;
-				if (!a->IsTypeOf<Pipe>()) continue;
+			//for (Actor* a : actors)
+			//{
+			//	if (!a) continue;
+			//	if (!a->IsTypeOf<Pipe>()) continue;
 
-				Pipe* p = a->As<Pipe>();
+			//	Pipe* p = a->As<Pipe>();
 
-				// 같은 x 라인이고, 파이프가 꽃 마커보다 아래에 있으면 후보
-				// (좌표계 상 y가 커질수록 아래로 간다는 전제)
-				if ((int)p->GetPosition().x == (int)flowerMarkerPos.x &&
-					p->GetPosition().y > flowerMarkerPos.y)
-				{
-					// 가장 가까운(가장 위에 있는) 파이프를 선택
-					if (!foundPipe || p->GetPosition().y < foundPipe->GetPosition().y)
-						foundPipe = p;
-				}
-			}
+			//	// 같은 x 라인이고, 파이프가 꽃 마커보다 아래에 있으면 후보.
+			//	// (좌표계 상 y가 커질수록 아래로 간다는 전제)
+			//	if ((int)p->GetPosition().x == (int)flowerMarkerPos.x &&
+			//		p->GetPosition().y > flowerMarkerPos.y)
+			//	{
+			//		// 가장 가까운(가장 위에 있는) 파이프를 선택.
+			//		if (!foundPipe || p->GetPosition().y < foundPipe->GetPosition().y)
+			//			foundPipe = p;
+			//	}
+			//}
 
-			if (foundPipe)
-			{
-				Rect r = foundPipe->GetRect();
+			//if (foundPipe)
+			//{
+			//	Rect r = foundPipe->GetRect();
 
-				// 파이프 입구(윗면)은 r.y
-				Vector2 mouthPos((int)r.x + (foundPipe->GetWidth() / 2), (int)r.y);
+			//	// 파이프 입구(윗면)은 r.y
+			//	Vector2 mouthPos((int)r.x + (foundPipe->GetWidth() / 2), (int)r.y);
 
-				AddNewActor(new PiranhaPlant(mouthPos));
-			}
-			else
-			{
-				// 파이프 못 찾으면 일단 마커 위치에 생성(디버그용)
-				AddNewActor(new PiranhaPlant(flowerMarkerPos));
-			}
-
+			//	AddNewActor(new PiranhaPlant(mouthPos));
+			//}
+			//else
+			//{
+			//	// 파이프 못 찾으면 일단 마커 위치에 생성(디버그용)
+			//	AddNewActor(new PiranhaPlant(flowerMarkerPos));
+			//}
+			AddNewActor(new PiranhaPlant(worldPos));
 			break;
 		}
+
+		case '|':
+			AddNewActor(new FlagPole(worldPos));
+			break;
 
 		default:
 			break;

@@ -6,6 +6,13 @@
 
 using namespace KhyMario;
 
+enum class LevelState
+{
+	Playing,
+	Clearing,
+	Cleared,
+};
+
 class GameLevel : public Level
 {
 	// RTTI µî·Ï.

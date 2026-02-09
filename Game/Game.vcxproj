@@ -90,11 +90,12 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Actor\Castle.cpp" />
+    <ClCompile Include="Actor\FlagPole.cpp" />
     <ClCompile Include="Actor\Pipe.cpp" />
     <ClCompile Include="Actor\Block.cpp" />
     <ClCompile Include="Actor\Goomba.cpp" />
     <ClCompile Include="Actor\Ground.cpp" />
-    <ClCompile Include="Actor\MouseTester.cpp" />
     <ClCompile Include="Actor\PiranhaPlant.cpp" />
     <ClCompile Include="Actor\Player.cpp" />
     <ClCompile Include="Game\Game.cpp" />
@@ -105,9 +106,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor\Block.h" />
+    <ClInclude Include="Actor\Castle.h" />
+    <ClInclude Include="Actor\FlagPole.h" />
     <ClInclude Include="Actor\Goomba.h" />
     <ClInclude Include="Actor\Ground.h" />
-    <ClInclude Include="Actor\MouseTester.h" />
     <ClInclude Include="Actor\Pipe.h" />
     <ClInclude Include="Actor\PiranhaPlant.h" />
     <ClInclude Include="Actor\Player.h" />
