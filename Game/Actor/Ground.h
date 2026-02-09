@@ -21,7 +21,7 @@ public:
 
     void Draw() override
     {
-        // sortingOrder는 -1 말고 0 추천 (너 Renderer 로직상 -1이면 뒤로 깔리긴 함)
+        // sortingOrder는 -1 말고 0 추천.
         for (int dx = 0; dx < GetWidth(); ++dx)
             Renderer::Get().Submit("=", Vector2((int)GetPosition().x + dx, (int)GetPosition().y), Color::Green, 0);
     }

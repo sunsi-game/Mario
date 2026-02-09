@@ -11,7 +11,7 @@ class GameLevel : public Level
 	// RTTI µî·Ï.
 	RTTI_DECLARATIONS(GameLevel, Level)
 
-public:
+public :
 	GameLevel();
 	~GameLevel();
 

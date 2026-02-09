@@ -27,6 +27,10 @@ namespace KhyMario
 		virtual void Tick(float deltaTime);
 		virtual void Draw();
 
+		void SetRenderChar(char c);
+		void SetRenderChar(const char* str) ;
+		void SetColor(KhyMario::Color newcolor);
+
 		// 삭제 요청 함수.
 		void Destroy();
 

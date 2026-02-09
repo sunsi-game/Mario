@@ -44,6 +44,28 @@ namespace KhyMario
 		Renderer::Get().Submit(image, position, color, sortingOrder);
 	}
 
+	void Actor::SetRenderChar(char c)
+	{
+	// 기존 image 해제
+		SafeDeleteArray(image);
+
+		// 문자 1개 + 널 종료
+		width = 1;
+		image = new char[2];
+		image[0] = c;
+		image[1] = '\0';
+	}
+
+	void Actor::SetRenderChar(const char* str)
+	{
+		ChangeImage(str);
+	}
+
+	void Actor::SetColor(KhyMario::Color newcolor)
+	{
+		color = newcolor;
+	}
+
 	void Actor::Destroy()
 	{
 		// 삭제 플래그 설정.

@@ -3,6 +3,10 @@
 Goomba::Goomba(const Vector2& startPos)
 	:super("G", startPos, KhyMario::Color::Yellow)
 {
+	dir =1.0f;
+	width = 2;
+	height = 2;
+	posX = (float)startPos.x;
 }
 
 void Goomba::Tick(float deltaTime)
@@ -15,39 +19,44 @@ void Goomba::Tick(float deltaTime)
 
 	auto blocks = gl->GetSolidBlocks();
 
-	position.x += dir * speed * deltaTime;
+	float dx = dir * moveSpeed * deltaTime;
+	float nextX = posX + dx;
 
-	// 중력.
-	float prevY = position.y;
-	//vy += gravity * deltaTime;
-	//position.y += vy * deltaTime;
+	// "다음 위치"로 벽 체크
+	if (HitWall(nextX, blocks))
+	{
+		// 1) 일단 방향만 바꾸고
+		dir *= -1;
 
-	// 착지.
-	//if (vy < 0) return; // 위로 올라가는 상태면 스킵.
+		// 2) posX는 벽에 박히지 않게 '이전 위치' 유지 (침투 금지)
+		//    (여기서 바로 끝내면 다음 프레임에 반대 방향으로 이동 시작)
+	}
+	else
+	{
+		posX = nextX;
+	}
 
-	float left = position.x;
-	float right = position.x + width;
-	float prevBottom = prevY + height;
-	float curBottom = position.y + height;
+	position.x = (int)posX;
+}
 
+
+
+
+
+
+bool Goomba::HasSolidAt(int x, int y, const std::vector<Block*>& blocks) const
+{
 	for (Block* b : blocks)
 	{
-		auto bp = b->GetPosition();
-		float bLeft = bp.x;
-		float bRight = bp.x + b->GetWidth();
-		float bTop = bp.y;
+		auto p = b->GetPosition();
+		int bx0 = (int)p.x;
+		int bx1 = (int)(p.x + b->GetWidth()); // 끝은 포함X
+		int by = (int)p.y;
 
-		bool overlapX = (right > bLeft) && (left < bRight);
-		bool wasAbove = prevBottom <= bTop;
-		bool nowCross = curBottom >= bTop;
-
-		if (overlapX && wasAbove && nowCross)
-		{
-			position.y = bTop - height;   // -1 빼지 말고 딱 맞추는 게 안정적.
-			vy = 0.0f;
-			break;
-		}
+		if (by == y && x >= bx0 && x < bx1)
+			return true;
 	}
+	return false;
 }
 
 bool Goomba::IsGroundUnder(float x, float y, const std::vector<Block*>& blocks) const
@@ -60,7 +69,11 @@ bool Goomba::IsGroundUnder(float x, float y, const std::vector<Block*>& blocks) 
 	for (Block* b : blocks)
 	{
 		auto bp = b->GetPosition();
-		if (iy == (int)bp.y && ix >= (int)bp.x && ix < (int)(bp.x + b->GetWidth()))
+		int by = (int)bp.y;
+		int bx0 = (int)bp.x;
+		int bx1 = (int)(bp.x + b->GetWidth());
+
+		if (iy == by && ix >= bx0 && ix < bx1)
 			return true;
 	}
 	return false;
@@ -68,23 +81,33 @@ bool Goomba::IsGroundUnder(float x, float y, const std::vector<Block*>& blocks) 
 
 bool Goomba::HitWall(float nextX, const std::vector<Block*>& blocks) const
 {
-	// 다음 위치에서 옆면 충돌이 생기는지 아주 단순 체크
-	int left = (int)nextX;
-	int right = (int)(nextX + width - 1);
-	int y = (int)position.y;
+	float nextLeft = nextX;
+	float nextRight = nextX + width;
+
+	// 발바닥은 빼고, 몸통 높이만 체크 (1칸 정도 위)
+	float top = position.y;
+	float bottom = position.y + height - 1;  // 너무 깊게 겹치지 않게
 
 	for (Block* b : blocks)
 	{
 		auto bp = b->GetPosition();
-		int bx0 = (int)bp.x;
-		int bx1 = (int)(bp.x + b->GetWidth() - 1);
-		int by = (int)bp.y;
+		float bLeft = bp.x;
+		float bRight = bp.x + b->GetWidth();
+		float bTop = bp.y;
+		float bBottom = bp.y + b->GetHeight();
 
-		// 같은 높이에 있는 벽만 간단히 판정(너 구조에 맞춘 최소 구현)
-		if (by != y) continue;
+		bool overlapY = (bottom > bTop) && (top < bBottom);
+		bool overlapX = (nextRight > bLeft) && (nextLeft < bRight);
 
-		if (!(right < bx0 || left > bx1))
+		if (overlapX && overlapY)
+		{
+			//"바닥"은 무시: 블록의 윗면이 굼바 발 아래쪽이면 바닥일 가능성이 큼
+			// (좌표계에 따라 +1/-1 조정 필요)
+			if (bTop >= position.y + height - 1)
+				continue;
+
 			return true;
+		}
 	}
 	return false;
 }

@@ -15,12 +15,16 @@ public :
 private :
 	KhyMario::Vector2 basePos;
 
+	float posY;
+
+	float hideDepth = 1.0f;
+
 	// 얼마나 올라오는지.
-	float upHeight = 3.0f;     
+	float upHeight = 1.0f;     
 	// 타일/초.
 	float speed = 4.0f;        
 	// 위/아래 대기.
-	float waitTime = 0.8f;     
+	float waitTime = 1.4f;     
 
 	float tWait = 0.0f;
 	// 0:대기(아래),1:상승,2:대기(위),3:하강.

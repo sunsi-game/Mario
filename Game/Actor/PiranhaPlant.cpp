@@ -4,6 +4,7 @@
 PiranhaPlant::PiranhaPlant(const KhyMario::Vector2& basePos)
 	:super("F", basePos, KhyMario::Color::Green), basePos(basePos)
 {
+    posY = (float)basePos.y;
 }
 
 void PiranhaPlant::Tick(float deltaTime)
@@ -46,7 +47,8 @@ void PiranhaPlant::Tick(float deltaTime)
     }
     else if (state == 1) // »ó½Â
     {
-        position.y -= speed * deltaTime;
+        posY -= speed * deltaTime;
+        position.y = (int)posY;
         if (position.y <= basePos.y - upHeight)
         {
             position.y = basePos.y - upHeight;
@@ -60,10 +62,13 @@ void PiranhaPlant::Tick(float deltaTime)
     }
     else if (state == 3) // ÇÏ°­
     {
-        position.y += speed * deltaTime;
-        if (position.y >= basePos.y)
+        posY += speed * deltaTime;
+        position.y = (int)posY;
+        float hideY = basePos.y + hideDepth;
+
+        if (position.y >= hideY)
         {
-            position.y = basePos.y;
+            position.y = hideY;
             state = 0;
         }
     }

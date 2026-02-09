@@ -6,6 +6,7 @@
 #include "Actor/Ground.h"
 #include "Actor/Goomba.h"
 #include "Actor/PiranhaPlant.h"
+#include "Actor/Pipe.h"
 #include <fstream>
 #include <string>
 #include <vector>
@@ -298,15 +299,57 @@ void GameLevel::LoadMap(const char* filename)
 			break;
 
 		case 'P' : //파이브.
+			AddNewActor(new Pipe(worldPos));
 			break;
+
 
 		case 'G' :  // 굼바.
 			AddNewActor(new Goomba(worldPos));
 			break;
 
-		case 'F' : // 파이프 꽃.
-			AddNewActor(new PiranhaPlant(worldPos));
+		case 'F':
+		{
+			// F가 찍힌 위치(월드 좌표)
+			Vector2 flowerMarkerPos = worldPos;
+
+			// 아래로 내려가면서 Pipe(Block)를 찾는다
+			Pipe* foundPipe = nullptr;
+
+			for (Actor* a : actors)
+			{
+				if (!a) continue;
+				if (!a->IsTypeOf<Pipe>()) continue;
+
+				Pipe* p = a->As<Pipe>();
+
+				// 같은 x 라인이고, 파이프가 꽃 마커보다 아래에 있으면 후보
+				// (좌표계 상 y가 커질수록 아래로 간다는 전제)
+				if ((int)p->GetPosition().x == (int)flowerMarkerPos.x &&
+					p->GetPosition().y > flowerMarkerPos.y)
+				{
+					// 가장 가까운(가장 위에 있는) 파이프를 선택
+					if (!foundPipe || p->GetPosition().y < foundPipe->GetPosition().y)
+						foundPipe = p;
+				}
+			}
+
+			if (foundPipe)
+			{
+				Rect r = foundPipe->GetRect();
+
+				// 파이프 입구(윗면)은 r.y
+				Vector2 mouthPos((int)r.x + (foundPipe->GetWidth() / 2), (int)r.y);
+
+				AddNewActor(new PiranhaPlant(mouthPos));
+			}
+			else
+			{
+				// 파이프 못 찾으면 일단 마커 위치에 생성(디버그용)
+				AddNewActor(new PiranhaPlant(flowerMarkerPos));
+			}
+
 			break;
+		}
 
 		default:
 			break;
