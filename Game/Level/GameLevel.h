@@ -6,6 +6,9 @@
 
 using namespace KhyMario;
 
+//전방 선언.
+class FlagPole;
+
 enum class LevelState
 {
 	Playing,
@@ -73,4 +76,7 @@ private:
 
 	int debugPlayerX = 0;
 	char buf[128] = {};
+
+	FlagPole* flagPole = nullptr;
+	bool isClearing = false;
 };

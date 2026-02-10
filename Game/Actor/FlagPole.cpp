@@ -4,6 +4,20 @@
 #include "Actor/Actor.h"
 #include "Render/Renderer.h"
 
+namespace
+{
+    // Renderer가 포인터만 저장하므로 리터럴만 넘기기.
+    const char* CharToText(char ch)
+    {
+        switch (ch)
+        {
+        case '|': return "|";
+        case '>': return ">";
+        default: return "?";
+        }
+    }
+}
+
 FlagPole::FlagPole(const Vector2& startPos, int poleHeight)
     :Actor("|", startPos, Color::White)
     , poleHeight(poleHeight)
@@ -54,22 +68,22 @@ void FlagPole::Draw()
     for (int i = 0; i < poleHeight; ++i)
     {
         const float x = baseX;
-        const float y = baseY - i;
+        const float y = baseY + i;
         
         Vector2 position;
         position.x = (int)x;
         position.y = (int)y;
-        Renderer::Get().Submit("|",position,color,sortingOrder);
+        Renderer::Get().Submit(CharToText('|'), position, color, sortingOrder);
     }
 
     {
         const float fx = baseX + 1;
-        const float fy = baseY - flagLocalY;
+        const float fy = baseY + flagLocalY;
         Vector2 fposition;
         fposition.x = (int)fx;
         fposition.y = (int)fy;
 
-        Renderer::Get().Submit(">", fposition, Color::Yellow, sortingOrder);
+        Renderer::Get().Submit(CharToText('>'), fposition, Color::Yellow, sortingOrder);
     }
 }
 
@@ -101,10 +115,10 @@ bool FlagPole::IsOverlapping(const Actor& other) const
 bool FlagPole::AABB(int ax, int ay, int aw, int ah, int bx, int by, int bw, int bh)
 {
     // 좌상단 기준, 겹치면 true 반환.
-    if (ax + aw < bx) return false;
-    if (bx + bw < ax) return false;
-    if (ay + ah < by) return false;
-    if (by + bh < ay) return false;
+    if (ax + aw <= bx) return false;
+    if (bx + bw <= ax) return false;
+    if (ay + ah <= by) return false;
+    if (by + bh <= ay) return false;
 
     return true;
 

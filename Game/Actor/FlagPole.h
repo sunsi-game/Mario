@@ -12,6 +12,8 @@ class FlagPole : public Actor
 	// 깃발은 trigger용이기 때문에 Block이 아닌 Actor.
 public:
 	FlagPole(const Vector2& startPos, int poleHeight = 11);
+	
+	
 
 	void Tick(float deltaTime) override;
 	void Draw() override;

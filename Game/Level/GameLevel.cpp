@@ -7,6 +7,7 @@
 #include "Actor/PiranhaPlant.h"
 #include "Actor/Pipe.h"
 #include "Actor/FlagPole.h"
+#include "Actor/Castle.h"
 
 #include <fstream>
 #include <string>
@@ -50,6 +51,20 @@ void GameLevel::Tick(float deltaTime)
 		if (maxCamera < 0) maxCamera = 0;
 		if (cameraX < 0) cameraX = 0;
 		if (cameraX > maxCamera) cameraX = maxCamera;
+	}
+
+	if (!isPlayerDead && player && flagPole && !isClearing)
+	{
+		if (flagPole->TestIntersect(player))
+		{
+			isClearing = true;
+
+			// 깃발 내려오기 시작.
+			flagPole->StartLoawering();
+
+			// 클리어 시퀀스 시작.
+			//StartClearSequence();
+		}
 	}
 
 	// 충돌 판정 처리.
@@ -307,44 +322,6 @@ void GameLevel::LoadMap(const char* filename)
 
 		case 'F':
 		{
-			//// F가 찍힌 위치(월드 좌표).
-			//Vector2 flowerMarkerPos = worldPos;
-
-			//// 아래로 내려가면서 Pipe(Block)를 찾는다.
-			//Pipe* foundPipe = nullptr;
-
-			//for (Actor* a : actors)
-			//{
-			//	if (!a) continue;
-			//	if (!a->IsTypeOf<Pipe>()) continue;
-
-			//	Pipe* p = a->As<Pipe>();
-
-			//	// 같은 x 라인이고, 파이프가 꽃 마커보다 아래에 있으면 후보.
-			//	// (좌표계 상 y가 커질수록 아래로 간다는 전제)
-			//	if ((int)p->GetPosition().x == (int)flowerMarkerPos.x &&
-			//		p->GetPosition().y > flowerMarkerPos.y)
-			//	{
-			//		// 가장 가까운(가장 위에 있는) 파이프를 선택.
-			//		if (!foundPipe || p->GetPosition().y < foundPipe->GetPosition().y)
-			//			foundPipe = p;
-			//	}
-			//}
-
-			//if (foundPipe)
-			//{
-			//	Rect r = foundPipe->GetRect();
-
-			//	// 파이프 입구(윗면)은 r.y
-			//	Vector2 mouthPos((int)r.x + (foundPipe->GetWidth() / 2), (int)r.y);
-
-			//	AddNewActor(new PiranhaPlant(mouthPos));
-			//}
-			//else
-			//{
-			//	// 파이프 못 찾으면 일단 마커 위치에 생성(디버그용)
-			//	AddNewActor(new PiranhaPlant(flowerMarkerPos));
-			//}
 			AddNewActor(new PiranhaPlant(worldPos));
 			break;
 		}
@@ -352,6 +329,9 @@ void GameLevel::LoadMap(const char* filename)
 		case '|':
 			AddNewActor(new FlagPole(worldPos));
 			break;
+
+		case 'C':
+			AddNewActor(new Castle(worldPos,6,4));
 
 		default:
 			break;
