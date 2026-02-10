@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "Level/GameLevel.h"
 #include "Level/MenuLevel.h"
+#include "Game/GameManager.h"
+#include "Level/EndingLevel.h"
 
 #include <iostream>
 
@@ -12,14 +14,15 @@ Game::Game()
 	instance = this;
 
 	// 두 레벨 생성 및 배열에 추가.
-	levels.emplace_back(new MenuLevel());
-	levels.emplace_back(new GameLevel());
-	
-
+	//levels.emplace_back(new MenuLevel());
+	//levels.emplace_back(new GameLevel());
+	//GameManager::Get().RequestGoMenu();
+	Engine::Get().SetNewLevel(new MenuLevel());
+	//Engine::Get().SetNewLevel(new EndingLevel());
 	// 시작 상태 (레벨) 설정.
 	// 시작 상태는 메뉴 먼저.
-	state = State::Menu;
-	mainLevel = levels[0];
+	//state = State::Menu;
+	//mainLevel = nullptr;
 }
 
 Game::~Game()
@@ -49,12 +52,17 @@ void Game::ToggleMenu()
 	// 현재 활성 레벨 인덱스가 1이면 -> 0으로.
 	// 현재 활성 레벨 인덱스가 0이면 -> 1으로.
 	// 공식 : (1-x). -> OneMinus.
-	int stateIndex = static_cast<int>(state);
-	int nextState = 1 - stateIndex;
-	state = static_cast<State>(nextState);
+	//int stateIndex = static_cast<int>(state);
+	//int nextState = 1 - stateIndex;
+	//state = static_cast<State>(nextState);
+	//
+	//// 메인 레벨 변경.
+	//mainLevel = levels[static_cast<int>(state)];
 
-	// 메인 레벨 변경.
-	mainLevel = levels[static_cast<int>(state)];
+	if (Engine::Get().GetMainLevel()->IsTypeOf<MenuLevel>())
+		GameManager::Get().StartNewGame(3);
+	else
+		GameManager::Get().RequestGoMenu();
 }
 
 Game& Game::Get()
@@ -67,4 +75,14 @@ Game& Game::Get()
 
 	// 정적 변수 반환.
 	return *instance;
+}
+
+void Game::StartGame()
+{
+	GameManager::Get().StartNewGame(3);
+}
+
+void Game::GoMenu()
+{
+	GameManager::Get().RequestGoMenu();
 }

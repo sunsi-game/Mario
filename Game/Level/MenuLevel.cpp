@@ -2,7 +2,8 @@
 #include "Game/Game.h"
 #include "Core/Input.h"
 #include "Util/Util.h"
-#include "Render/REnderer.h"
+#include "Game/GameManager.h"
+#include "Render/Renderer.h"
 #include <iostream>
 
 MenuLevel::MenuLevel()
@@ -13,7 +14,8 @@ MenuLevel::MenuLevel()
 		[]()
 		{
 			// 메뉴 토글 함수 호출.
-			Game::Get().ToggleMenu();
+			//Game::Get().StartGame();
+			GameManager::Get().StartNewGame(3);
 		}
 	));
 
@@ -68,7 +70,7 @@ void MenuLevel::Tick(float deltaTime)
 	if (Input::Get().GetKeyDown(VK_ESCAPE))
 	{
 		// 메뉴 토글.
-		Game::Get().ToggleMenu();
+		//Game::Get().ToggleMenu();
 
 		// 인덱스 초기화.
 		currentIndex = 0;
@@ -96,6 +98,6 @@ void MenuLevel::Draw()
 		Util::SetConsoleTextColor(textColor);
 
 		// 텍스트 출력.
-		std::cout << items[i]->text << "\n";
+		//std::cout << items[i]->text << "\n";
 	}
 }

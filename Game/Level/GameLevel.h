@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Level/Level.h"
+#include "Level/BaseLevel.h"
 #include "Math/Vector2.h"
 #include "Actor/Block.h"
 
@@ -24,10 +24,18 @@ enum class ClearPhase
 	None,
 	LowerFlag,
 	AutoWalkToCastle,
+<<<<<<< HEAD
 	Done
 };
 
 class GameLevel : public Level
+=======
+	EnterCastle,
+	Done
+};
+
+class GameLevel : public BaseLevel
+>>>>>>> 27065cc (feat : ì”¬ ì „í™˜ ì˜¤ë¥˜ í•´ê²°)
 {
 	// RTTI µî·Ï.
 	RTTI_DECLARATIONS(GameLevel, Level)
@@ -103,6 +111,14 @@ private:
 	ClearPhase clearPhase = ClearPhase::None;
 
 	// ÀÚµ¿ °È±â.
+<<<<<<< HEAD
 	float clearWalkSpeed = 6.0f; 
 	float walkStopDistance = 1.0f; // ¼º ¾Õ¿¡¼­ ¸ØÃâ °Å¸®.
+=======
+	float clearWalkSpeed = 5.0f; 
+	float walkStopDistance = 0.0f; // ¼º ¾Õ¿¡¼­ ¸ØÃâ °Å¸®.
+
+	float clearTimer = 0.0f;
+	float enterCastleDuration = 0.6f; // ¼º¾ÈÀ¸·Î µé¾î°¡´Â ½Ã°£.
+>>>>>>> 27065cc (feat : ì”¬ ì „í™˜ ì˜¤ë¥˜ í•´ê²°)
 };

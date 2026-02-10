@@ -127,6 +127,7 @@ namespace KhyMario
 			}
 		}
 
+
 		// Á¤¸®.
 		Shutdown();
 	}

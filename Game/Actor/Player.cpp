@@ -5,6 +5,7 @@
 #include "Render/Renderer.h" 
 #include "Level/GameLevel.h"
 #include "Util/MathUtil.h"
+#include "Game/GameManager.h"
 
 using namespace KhyMario; 
 Player::Player() 
@@ -16,7 +17,9 @@ Player::Player()
 
 	Grounded = true;
 	vy = 0.0f;
-	//timer.SetTargetTime(jumpTime);
+
+	posX = position.x;
+
 }
 Player::Player(const Vector2& startPos)
 	: super("@", startPos, Color::Red), playerMode(PlayerMode::Normal)
@@ -34,6 +37,7 @@ void Player::Tick(float deltaTime)
 { 
 	super::Tick(deltaTime); 
 
+<<<<<<< HEAD
 	// Á¾·á Ã³¸®. 
 	if (Input::Get().GetKeyDown(VK_ESCAPE)) 
 	{ // °ÔÀÓ Á¾·á. 
@@ -56,6 +60,34 @@ void Player::Tick(float deltaTime)
 	if (Input::Get().GetKeyDown('w') || Input::Get().GetKeyDown(VK_SPACE))
 		TryJump();
 	
+=======
+	// °æ°ú ½Ã°£ ¾÷µ¥ÀÌÆ®.
+	//elapsedTime += deltaTime; 
+	timer.Tick(deltaTime); 
+
+
+	// ÀÔ·Â Àá±èÀÌ¸é Å° ÀÔ·ÂÀº ¹«½Ã
+	if (!inputLocked)
+	{
+		if (Input::Get().GetKey(VK_LEFT))  MoveLeft();
+		if (Input::Get().GetKey(VK_RIGHT)) MoveRight();
+		if (Input::Get().GetKeyDown('w') || Input::Get().GetKeyDown(VK_SPACE))
+			TryJump();
+	}
+
+	// ÀÚµ¿ ÀÌµ¿ÀÌ ÄÑÁ® ÀÖÀ¸¸é ÀÔ·Â ¾øÀÌµµ ÀÌµ¿
+	if (autoMove)
+	{
+		posX += autoMoveDir * autoMoveSpeed * deltaTime;
+
+		float worldWidth = GetWorldWidth();
+		if (posX + width > worldWidth) posX = worldWidth - width;
+		if (posX < 0) posX = 0;
+
+		position.x = (int)posX;
+	}
+
+>>>>>>> 27065cc (feat : ì”¬ ì „í™˜ ì˜¤ë¥˜ í•´ê²°)
 	// Áß·Â + À§Ä¡ Àû¿ë 
 	ApplyGravityAndMove(deltaTime); 
 	
@@ -74,27 +106,20 @@ void Player::Tick(float deltaTime)
 
 void Player::MoveRight()
 { 
-	// ¿À¸¥ÂÊ ÀÌµ¿ Ã³¸®. 
-	position.x += moveSpeed;
-
+	posX += moveSpeed;
 	float worldWidth = GetWorldWidth();
-	
-	// ÁÂÇ¥ °Ë»ç. 
-	if (position.x + width > worldWidth) 
-	{ 
-		//position.x -= 1;
-		position.x = worldWidth - width;
-	} 
+	if (posX + width > worldWidth) posX = worldWidth - width;
+	position.x = (int)posX;
 } 
 
 void Player::MoveLeft()
 { 
 	// ¿ÞÂÊ ÀÌµ¿ Ã³¸®. 
-	position.x -= moveSpeed;
+	posX -= moveSpeed;
 	
 	// ¿ùµå ¿ÞÂÊ ³¡Àº Ç×»ó ¸·±â
-	if (position.x < 0)
-		position.x = 0;
+	if (posX < 0)
+		posX = 0;
 
 	// Ä«¸Þ¶ó°¡ µÚ·Î ¾È °¡´Â ±¸Á¶.
 	// ÇÃ·¹ÀÌ¾îµµ È­¸é ¿ÞÂÊ ¹ÛÀ¸·Î ¸ø ³ª°¡°Ô ¸·±â.
@@ -111,6 +136,8 @@ void Player::MoveLeft()
 	float screenX = position.x - camX;
 	if (screenX < minScreenX)
 		position.x = camX + minScreenX;
+
+	position.x = (int)posX;
 } 
 
 void Player::MoveJump() 
@@ -142,21 +169,12 @@ void Player::ApplyGravityAndMove(float deltaTime)
 	// 2) ¼Óµµ·Î À§Ä¡ ÀÌµ¿. 
 	position.y += vy * deltaTime; 
 	
-	// 3) ¹Ù´Ú(È­¸é ¾Æ·¡) Ãæµ¹ Ã³¸®.
-	// const float groundY = static_cast<float>(Engine::Get().GetHeight()-2); 
-	/*if (position.y >= groundY) 
-	{ 
-		position.y = groundY - 1; 
-		vy = 0.0f; 
-		Grounded = true; 
-		return; 
-	} */
-
 	// È­¸é ¾Æ·¡ ³»·Á°¡¸é Á×À½
 	float killY = static_cast<float>(Engine::Get().GetHeight() + 3);
-	if (position.y > killY)
+	if (position.y >= killY)
 	{
 		Destroy();
+		GameManager::Get().OnPlayerDied();
 		return;
 	}
 

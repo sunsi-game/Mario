@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Level/Level.h"
+#include "Level/BaseLevel.h"
 #include "Math/Color.h"
 #include <vector>
 
@@ -28,7 +28,7 @@ struct MenuItem
 	OnSelected onSelected = nullptr;
 };
 
-class MenuLevel : public Level
+class MenuLevel : public BaseLevel
 {
 	RTTI_DECLARATIONS(MenuLevel, Level)
 

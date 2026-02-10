@@ -24,6 +24,9 @@ public :
 
 	static Game& Get();
 
+	void StartGame();
+	void GoMenu();
+
 private :
 	// 게임에서 관리하는 레벨을 저장할 배열.
 	std::vector<Level*> levels;

@@ -70,8 +70,17 @@ private:
 	// Å¸ÀÌ¸Ó º¯¼ö.
 	Timer timer;
 
+<<<<<<< HEAD
 	bool inputLocked = false;
 	bool autoMove = false;
 	int autoMoveDir = 1;
 	float autoMoveSpeed = 6.0f;
+=======
+	float posX = 0.0f;
+
+	bool inputLocked = false;
+	bool autoMove = false;
+	int autoMoveDir = 1;
+	float autoMoveSpeed = 2.0f;
+>>>>>>> 27065cc (feat : ì”¬ ì „í™˜ ì˜¤ë¥˜ í•´ê²°)
 };

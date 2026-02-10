@@ -99,6 +99,9 @@
     <ClCompile Include="Actor\PiranhaPlant.cpp" />
     <ClCompile Include="Actor\Player.cpp" />
     <ClCompile Include="Game\Game.cpp" />
+    <ClCompile Include="Game\GameManager.cpp" />
+    <ClCompile Include="Level\ClearEndingLevel.cpp" />
+    <ClCompile Include="Level\EndingLevel.cpp" />
     <ClCompile Include="Level\GameLevel.cpp" />
     <ClCompile Include="Level\MenuLevel.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -114,6 +117,10 @@
     <ClInclude Include="Actor\PiranhaPlant.h" />
     <ClInclude Include="Actor\Player.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\GameManager.h" />
+    <ClInclude Include="Level\BaseLevel.h" />
+    <ClInclude Include="Level\ClearEndingLevel.h" />
+    <ClInclude Include="Level\EndingLevel.h" />
     <ClInclude Include="Level\GameLevel.h" />
     <ClInclude Include="Level\MenuLevel.h" />
     <ClInclude Include="Util\MathUtil.h" />

@@ -8,16 +8,16 @@
 #include "Actor/Pipe.h"
 #include "Actor/FlagPole.h"
 #include "Actor/Castle.h"
+#include "Game/GameManager.h"
 
 #include <fstream>
 #include <string>
 #include <vector>
 #include <iostream>
 
-
 GameLevel::GameLevel()
 {
-	LoadMap("Map.txt");
+    LoadMap("Map.txt");
 }
 
 GameLevel::~GameLevel()
@@ -26,149 +26,243 @@ GameLevel::~GameLevel()
 
 void GameLevel::Tick(float deltaTime)
 {
-	super::Tick(deltaTime);
+    super::Tick(deltaTime);
 
-	// ÇÃ·¹ÀÌ¾î Ã£±â
-	Player* player = nullptr;
-	for (Actor* a : actors)
-	{
-		if (a && a->IsTypeOf<Player>())
-		{
-			player = a->As<Player>();
-			break;
-		}
-	}
 
-	if (player)
-	{
-		float target = player->GetPosition().x - followOffsetX; // È­¸é¿¡¼­ ÇÃ·¹ÀÌ¾î À§Ä¡(¿ÞÂÊÀ¸·Î 20Ä­ Á¤µµ)
 
-		if (target > cameraX) cameraX = target;      // µÚ·Î´Â ¾È °¨
-		if (cameraX < 0) cameraX = 0;
+    // ÇÃ·¹ÀÌ¾î Ã£±â
+    Player* player = nullptr;
+    for (Actor* a : actors)
+    {
+        if (a && a->IsTypeOf<Player>())
+        {
+            player = a->As<Player>();
+            break;
+        }
+    }
+    if (isClearing)
+    {
+        UpdateClearing(deltaTime);
+        GameManager::Get().Tick();
+        return;
+    }
 
-		// (¿É¼Ç) ¸Ê ³¡¿¡¼­ ¸ØÃß±â
-		float maxCamera = levelWidth - (float)Engine::Get().GetWidth();
-		if (maxCamera < 0) maxCamera = 0;
-		if (cameraX < 0) cameraX = 0;
-		if (cameraX > maxCamera) cameraX = maxCamera;
-	}
+    // Ä«¸Þ¶ó °»½Å
+    if (player)
+    {
+        float target = player->GetPosition().x - followOffsetX;
 
-	if (!isPlayerDead && player && flagPole && !isClearing)
-	{
-		if (flagPole->TestIntersect(player))
-		{
-			isClearing = true;
+        if (target > cameraX) cameraX = target; // µÚ·Î´Â ¾È °¨
+        if (cameraX < 0) cameraX = 0;
 
-			// ±ê¹ß ³»·Á¿À±â ½ÃÀÛ.
-			flagPole->StartLoawering();
+        float maxCamera = levelWidth - (float)Engine::Get().GetWidth();
+        if (maxCamera < 0) maxCamera = 0;
 
+<<<<<<< HEAD
 			// Å¬¸®¾î ½ÃÄö½º ½ÃÀÛ.
 			StartClearSequence();
 			UpdateClearing(deltaTime);
 		}
 	}
+=======
+        if (cameraX > maxCamera) cameraX = maxCamera;
+    }
+>>>>>>> 27065cc (feat : ì”¬ ì „í™˜ ì˜¤ë¥˜ í•´ê²°)
 
-	// Ãæµ¹ ÆÇÁ¤ Ã³¸®.
-	ProcessCollisionPlayerBulletAndEnemy();
-	ProcessCollisionPlayerAndEnemyBullet();
+    //// Å¬¸®¾î ÁøÇà ÁßÀÌ¸é ¿¬Ãâ¸¸ ¾÷µ¥ÀÌÆ®ÇÏ°í ³ª¸ÓÁö Ãæµ¹/ÀüÅõ´Â ¸ØÃß´Â °Ô º¸Åë ¸¶¸®¿À ´À³¦
+    //if (isClearing)
+    //{
+    //    UpdateClearing(deltaTime);
+    //
+    //    // ¸Å´ÏÀú Tick (ESC/ÀüÈ¯ ÇÃ·¡±× Ã³¸®)
+    //    GameManager::Get().Tick();
+    //
+    //    if (player) debugPlayerX = (int)player->GetPosition().x;
+    //    return;
+    //}
 
-	if (player) debugPlayerX = (int)player->GetPosition().x;
+    // ±ê¹ß Æ®¸®°Å(Å¬¸®¾î ½ÃÀÛ)
+    if (!isPlayerDead && player && flagPole && !isClearing)
+    {
+        if (flagPole->IsOverlapping(*player))
+        {
+            StartClearSequence(); // ¿©±â¼­ isClearing=true + ±ê¹ß ³»·Á¿À±â ½ÃÀÛ±îÁö Ã³¸®
+        }
+    }
+
+    // ¸Å´ÏÀú Tick (ESC/ÀüÈ¯ ÇÃ·¡±× Ã³¸®)
+    GameManager::Get().Tick();
+
+
+
+    // Ãæµ¹ ÆÇÁ¤ Ã³¸®.
+    ProcessCollisionPlayerBulletAndEnemy();
+    ProcessCollisionPlayerAndEnemyBullet();
+
+    if (player) debugPlayerX = (int)player->GetPosition().x;
 }
 
 void GameLevel::Draw()
 {
-	// ¿ùµå ±×¸®±â ½ÃÀÛ Àü¿¡ Ä«¸Þ¶ó Àû¿ë
-	Renderer::Get().SetCameraOffset(Vector2((int)cameraX, 0));
-	
-	super::Draw();
+    // ¿ùµå ±×¸®±â ½ÃÀÛ Àü¿¡ Ä«¸Þ¶ó Àû¿ë
+    Renderer::Get().SetCameraOffset(Vector2((int)cameraX, 0));
 
+    super::Draw();
 
-	if (isPlayerDead)
-	{
-		// ÇÃ·¹ÀÌ¾î Á×À½ ¸Þ½ÃÁö Renderer¿¡ Á¦Ãâ.
-		Renderer::Get().Submit("!Dead!", playerDeadPosition);
-
-		//// Á¡¼ö º¸¿©ÁÖ±â.
-		//ShowScore();
-
-		// È­¸é¿¡ ¹Ù·Î Ç¥½Ã.
-		Renderer::Get().PresentImmediately();
-
-		// ÇÁ·Î±×·¥ Á¤Áö.
-		Sleep(2000);
-
-		// °ÔÀÓ Á¾·á.
-		Engine::Get().QuitEngine();
-	}
-
-	//// Á¡¼ö º¸¿©ÁÖ±â.
-	ShowScore();
+    // Á¡¼ö/¸ñ¼û Ç¥½Ã
+    ShowScore();
 }
 
 void GameLevel::ProcessCollisionPlayerBulletAndEnemy()
 {
-	// ÇÃ·¹ÀÌ¾î Åº¾à°ú Àû ¾×ÅÍ ÇÊÅÍ¸µ.
-	std::vector<Actor*> bullets;
-
-	// Ãæµ¹ ÆÇÁ¤.
-	//for (Actor* const bullet : bullets)
-	//{
-	//	for (Enemy* const enemy : enemies)
-	//	{
-	//		// AABB °ãÄ§ ÆÇÁ¤.
-	//		if (bullet->TestIntersect(enemy))
-	//		{
-	//			enemy->OnDamaged();
-	//			bullet->Destroy();
-	//
-	//			// Á¡¼ö Ãß°¡.
-	//			score += 1;
-	//			continue;
-	//		}
-	//	}
-	//}
+    // TODO: ³Ê ·ÎÁ÷ ºÙÀÌ¸é µÊ.
 }
 
 void GameLevel::ProcessCollisionPlayerAndEnemyBullet()
 {
-	// ¾×ÅÍ ÇÊÅÍ¸µÀ» À§ÇÑ º¯¼ö.
-	Player* player = nullptr;
-	std::vector<Actor*> bullets;
+    Player* player = nullptr;
+    std::vector<Actor*> bullets;
 
-	// ¾×ÅÍ ÇÊÅÍ¸µ.
-	for (Actor* const actor : actors)
-	{
-		if (!player && actor->IsTypeOf<Player>())
-		{
-			player = actor->As<Player>();
-			continue;
-		}
+    for (Actor* const actor : actors)
+    {
+        if (!player && actor && actor->IsTypeOf<Player>())
+        {
+            player = actor->As<Player>();
+            continue;
+        }
+        // bullets ÇÊÅÍ¸µ ·ÎÁ÷ ÀÖÀ¸¸é ¿©±â¼­
+    }
 
-	}
+    if (bullets.size() == 0 || !player)
+        return;
 
-	// ÆÇÁ¤ Ã³¸® ¾ÈÇØµµ µÇ´ÂÁö È®ÀÎ.
-	if (bullets.size() == 0 || !player)
-	{
-		return;
-	}
+    for (Actor* const bullet : bullets)
+    {
+        if (bullet && bullet->TestIntersect(player))
+        {
+            isPlayerDead = true;
+            playerDeadPosition = player->GetPosition();
 
-	// Ãæµ¹ ÆÇÁ¤.
-	for (Actor* const bullet : bullets)
-	{
-		if (bullet->TestIntersect(player))
-		{
-			// ÇÃ·¹ÀÌ¾î Á×À½ ¼³Á¤.
-			isPlayerDead = true;
+            player->Destroy();
+            bullet->Destroy();
 
-			// Á×Àº À§Ä¡ ÀúÀå.
-			playerDeadPosition = player->GetPosition();
+            // Á×À½ Ã³¸®(¸ñ¼û/Àç½ÃÀÛ/¿£µù)Àº ¸Å´ÏÀú·Î
+            GameManager::Get().OnPlayerDied();
+            break;
+        }
+    }
+}
 
-			// ¾×ÅÍ Á¦°Å Ã³¸®.
-			player->Destroy();
-			bullet->Destroy();
-			break;
-		}
-	}
+void GameLevel::StartClearSequence()
+{
+    // ÀÌ¹Ì Å¬¸®¾î ÁßÀÌ¸é ¹«½Ã
+    if (isClearing) return;
+
+    isClearing = true;
+    clearPhase = ClearPhase::LowerFlag;
+
+    // ÇÃ·¹ÀÌ¾î Ã£¾Æ¼­ ÀÔ·Â Àá±Ý + ÀÚµ¿ ¿¬Ãâ ÁØºñ
+    Player* player = nullptr;
+    for (Actor* a : actors)
+    {
+        if (a && a->IsTypeOf<Player>())
+        {
+            player = a->As<Player>();
+            break;
+        }
+    }
+
+    if (player)
+    {
+        player->SetInputLocked(true);
+    }
+
+    if (flagPole)
+    {
+        // ¿ÀÅ¸ ÁÖÀÇ: ³× ÇÔ¼ö ½ÇÁ¦ ÀÌ¸§¿¡ ¸ÂÃç¾ß ÇÔ
+        flagPole->StartLoawering();
+    }
+}
+
+void GameLevel::UpdateClearing(float deltaTime)
+{
+    // ÇÃ·¹ÀÌ¾î Ã£±â
+    Player* player = nullptr;
+    for (Actor* a : actors)
+    {
+        if (a && a->IsTypeOf<Player>())
+        {
+            player = a->As<Player>();
+            break;
+        }
+    }
+    if (!player) return;
+
+    switch (clearPhase)
+    {
+    case ClearPhase::LowerFlag:
+    {
+        // ±ê¹ß ´Ù ³»·Á¿À¸é ÀÚµ¿ °È±â ½ÃÀÛ
+        if (!flagPole || flagPole->IsLoweredDone())
+        {
+            clearPhase = ClearPhase::AutoWalkToCastle;
+            player->SetAutoMove(true);
+            player->SetAutoMoveDir(+1);
+            player->SetAutoMoveSpeed(6.0f);
+        }
+        break;
+    }
+
+    case ClearPhase::AutoWalkToCastle:
+    {
+        if (!castle)
+        {
+            clearPhase = ClearPhase::Done;
+            break;
+        }
+
+        const float px = player->GetPosition().x;
+        const float targetX = castle->GetPosition().x - walkStopDistance;
+
+        if (px >= targetX)
+        {
+            clearPhase = ClearPhase::EnterCastle;
+            clearTimer = 0.0f;
+
+            player->SetAutoMove(true);
+            player->SetAutoMoveDir(+1);
+            player->SetAutoMoveSpeed(6.0f);
+        }
+        break;
+    }
+
+    case ClearPhase::EnterCastle:
+    {
+        clearTimer += deltaTime;
+
+        // ÀÏÁ¤ ½Ã°£ Áö³ª¸é ¸ØÃß°í ¾À ÀüÈ¯
+        if (clearTimer >= enterCastleDuration)
+        {
+            player->SetAutoMove(false);
+            player->SetInputLocked(false);
+
+            clearPhase = ClearPhase::Done;
+        }
+        break;
+    }
+
+    case ClearPhase::Done:
+    {
+        // ¿©±â¼­ ¡°Å¬¸®¾î È­¸éÀ¸·Î ÀüÈ¯¡±¸¸ ¸Å´ÏÀú¿¡°Ô ¸Ã±è
+        // (ÀüÈ¯±îÁö ÇÑ ÇÁ·¹ÀÓ °É¸± ¼ö ÀÖÀ¸´Ï, ¹Ýº¹ È£Ãâ ¹æÁö·Î isClearingÀ» ²¨ÁÜ)
+        isClearing = false;
+        GameManager::Get().OnStageCleared();
+        return;
+    }
+
+    default:
+        break;
+    }
 }
 
 void GameLevel::StartClearSequence()
@@ -261,174 +355,182 @@ void GameLevel::UpdateClearing(float deltaTime)
 
 std::vector<Actor*>& GameLevel::GetActors()
 {
-	return actors;
+    return actors;
 }
 
 std::vector<Block*> GameLevel::GetSolidBlocks() const
 {
-	std::vector<Block*> blocks;
-	blocks.reserve(32);
+    std::vector<Block*> blocks;
+    blocks.reserve(32);
 
-	for (Actor* const actor : actors)
-	{
-		if (actor && actor->IsTypeOf<Block>())
-		{
-			Block* b = actor->As<Block>();
-			if (b && b->IsSolid())
-				blocks.emplace_back(b);
-		}
-	}
+    for (Actor* const actor : actors)
+    {
+        if (actor && actor->IsTypeOf<Block>())
+        {
+            Block* b = actor->As<Block>();
+            if (b && b->IsSolid())
+                blocks.emplace_back(b);
+        }
+    }
 
-	return blocks;
+    return blocks;
 }
 
 float GameLevel::GetLevelWidth() const
 {
-	return levelWidth;
+    return levelWidth;
 }
-
 
 void GameLevel::ShowScore()
 {
-	sprintf_s(scoreString, 128, "Score: %d", score);
-	Renderer::Get().Submit(
-		scoreString,
-		Vector2(0, Engine::Get().GetHeight() - 1)
-	);
+    sprintf_s(scoreString, 128, "Life: %d", GameManager::Get().GetLives());
+    Renderer::Get().Submit(
+        scoreString,
+        Vector2(0, Engine::Get().GetHeight() - 1)
+    );
 }
 
 void GameLevel::SpawnFromMapChar(char c, int x, int y)
 {
+    // Áö±ÝÀº LoadMap¿¡¼­ Á÷Á¢ Ã³¸® ÁßÀÌ¶ó ºñ¿öµÖµµ µÊ
 }
 
 void GameLevel::LoadMap(const char* filename)
 {
-	// "../Assets/filename"
-	char path[2048] = {};
-	sprintf_s(path, 2048, "../Assets/%s", filename);
+    // "../Assets/filename"
+    char path[2048] = {};
+    sprintf_s(path, 2048, "../Assets/%s", filename);
 
-	FILE* file = nullptr;
-	fopen_s(&file, path, "rt");
+    FILE* file = nullptr;
+    fopen_s(&file, path, "rt");
 
-	if (!file)
-	{
-		std::cerr << "Failed to open map file: " << path << "\n";
-		__debugbreak();
-		return;
-	}
+    if (!file)
+    {
+        std::cerr << "Failed to open map file: " << path << "\n";
+        __debugbreak();
+        return;
+    }
 
-	fseek(file, 0, SEEK_END);
-	size_t fileSize = ftell(file);
-	rewind(file);
+    fseek(file, 0, SEEK_END);
+    size_t fileSize = ftell(file);
+    rewind(file);
 
-	char* data = new char[fileSize + 1];
-	size_t readSize = fread(data, sizeof(char), fileSize, file);
-	data[readSize] = '\0';
+    char* data = new char[fileSize + 1];
+    size_t readSize = fread(data, sizeof(char), fileSize, file);
+    data[readSize] = '\0';
 
-	// ·¹º§ Æø °è»ê¿ë
-	int currentLineWidth = 0;
-	int maxLineWidth = 0;
-	mapHeight = 0;
+    // ·¹º§ Æø °è»ê¿ë
+    int currentLineWidth = 0;
+    int maxLineWidth = 0;
+    mapHeight = 0;
 
-	for (size_t i = 0; i < readSize; ++i)
-	{
-		char c = data[i];
-		if (c == '\r') continue;
+    for (size_t i = 0; i < readSize; ++i)
+    {
+        char c = data[i];
+        if (c == '\r') continue;
 
-		if (c == '\n')
-		{
-			mapHeight++;
-			if (currentLineWidth > maxLineWidth)
-				maxLineWidth = currentLineWidth;
+        if (c == '\n')
+        {
+            mapHeight++;
+            if (currentLineWidth > maxLineWidth)
+                maxLineWidth = currentLineWidth;
 
-			currentLineWidth = 0;
-			continue;
-		}
+            currentLineWidth = 0;
+            continue;
+        }
 
-		currentLineWidth++;
-	}
+        currentLineWidth++;
+    }
 
-	// ¸¶Áö¸· ÁÙ ¹Ý¿µ
-	if (currentLineWidth > 0)
-	{
-		mapHeight++;
-		if (currentLineWidth > maxLineWidth)
-			maxLineWidth = currentLineWidth;
-	}
+    // ¸¶Áö¸· ÁÙ ¹Ý¿µ
+    if (currentLineWidth > 0)
+    {
+        mapHeight++;
+        if (currentLineWidth > maxLineWidth)
+            maxLineWidth = currentLineWidth;
+    }
 
-	levelWidth = (float)maxLineWidth;
+    levelWidth = (float)maxLineWidth;
 
-	// ---- 2´Ü°è: y ¿ÀÇÁ¼Â °è»ê ----
-	// ÅØ½ºÆ® ¸ÊÀÇ ¸¶Áö¸· ÁÙÀÌ È­¸é ¾Æ·¡(-2)¿¡ ¿Àµµ·Ï
-	int groundY = Engine::Get().GetHeight() - 2;
-	int offsetY = groundY - (mapHeight - 1);
+    // y ¿ÀÇÁ¼Â °è»ê: ¸¶Áö¸· ÁÙÀÌ È­¸é ¾Æ·¡(-2)¿¡ ¿Àµµ·Ï
+    int groundY = Engine::Get().GetHeight() - 2;
+    int offsetY = groundY - (mapHeight - 1);
 
-	// ---- 3´Ü°è: ½ÇÁ¦ Actor »ý¼º ----
-	Vector2 pos = Vector2(0, 0);
-	bool spawnedPlayer = false;
+    Vector2 pos = Vector2(0, 0);
+    bool spawnedPlayer = false;
 
-	for (size_t i = 0; i < readSize; ++i)
-	{
-		char c = data[i];
+    // Æ÷ÀÎÅÍ ÃÊ±âÈ­(¸Ê ´Ù½Ã ·Îµå ´ëºñ)
+    flagPole = nullptr;
+    castle = nullptr;
 
-		if (c == '\r') continue;
+    for (size_t i = 0; i < readSize; ++i)
+    {
+        char c = data[i];
 
-		if (c == '\n')
-		{
-			pos.y++;
-			pos.x = 0;
-			continue;
-		}
+        if (c == '\r') continue;
 
-		Vector2 worldPos(pos.x, pos.y + offsetY);
+        if (c == '\n')
+        {
+            pos.y++;
+            pos.x = 0;
+            continue;
+        }
 
-		switch (c)
-		{
-		case '#':   // ÇÃ·§Æû
-			AddNewActor(new Block(worldPos, 1, 1));
-			break;
+        Vector2 worldPos(pos.x, pos.y + offsetY);
 
-		case '=':   // ¹Ù´Ú
-			AddNewActor(new Ground(worldPos, 1, 1));
-			break;
+        switch (c)
+        {
+        case '#':
+            AddNewActor(new Block(worldPos, 1, 1));
+            break;
 
-		case '@':   // ÇÃ·¹ÀÌ¾î ½ÃÀÛ À§Ä¡
-			if (!spawnedPlayer)
-			{
-				AddNewActor(new Player(worldPos));
-				spawnedPlayer = true;
-			}
-			break;
+        case '=':
+            AddNewActor(new Ground(worldPos, 1, 1));
+            break;
 
-		case 'P' : //ÆÄÀÌºê.
-			AddNewActor(new Pipe(worldPos));
-			break;
+        case '@':
+            if (!spawnedPlayer)
+            {
+                AddNewActor(new Player(worldPos));
+                spawnedPlayer = true;
+            }
+            break;
 
+        case 'P':
+            AddNewActor(new Pipe(worldPos));
+            break;
 
-		case 'G' :  // ±À¹Ù.
-			AddNewActor(new Goomba(worldPos));
-			break;
+        case 'G':
+            AddNewActor(new Goomba(worldPos));
+            break;
 
-		case 'F':
-		{
-			AddNewActor(new PiranhaPlant(worldPos));
-			break;
-		}
+        case 'F':
+            AddNewActor(new PiranhaPlant(worldPos));
+            break;
 
-		case '|':
-			AddNewActor(new FlagPole(worldPos));
-			break;
+        case '|':
+        {
+            auto* fp = new FlagPole(worldPos);
+            AddNewActor(fp);
+            flagPole = fp; // ÀúÀå
+            break;
+        }
 
-		case 'C':
-			AddNewActor(new Castle(worldPos,6,4));
+        case 'C':
+        {
+            auto* cs = new Castle(worldPos, 6, 4);
+            AddNewActor(cs);
+            castle = cs;   //ÀúÀå
+            break;
+        }
 
-		default:
-			break;
-		}
+        default:
+            break;
+        }
 
-		pos.x++;
-	}
+        pos.x++;
+    }
 
-	delete[] data;
-	fclose(file);
+    delete[] data;
+    fclose(file);
 }
