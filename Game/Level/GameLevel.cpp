@@ -63,7 +63,8 @@ void GameLevel::Tick(float deltaTime)
 			flagPole->StartLoawering();
 
 			// 클리어 시퀀스 시작.
-			//StartClearSequence();
+			StartClearSequence();
+			UpdateClearing(deltaTime);
 		}
 	}
 
@@ -167,6 +168,94 @@ void GameLevel::ProcessCollisionPlayerAndEnemyBullet()
 			bullet->Destroy();
 			break;
 		}
+	}
+}
+
+void GameLevel::StartClearSequence()
+{
+	if (isClearing) return;
+	isClearing = true;
+	clearPhase = ClearPhase::LowerFlag;
+
+	// 플레이어 찾아서 입력 잠금 + 자동 연출 준비.
+	Player* player = nullptr;
+	for (Actor* a : actors)
+	{
+		if (a && a->IsTypeOf<Player>())
+		{
+			player = a->As<Player>();
+			break;
+		}
+	}
+
+	if (player)
+	{
+		player->SetInputLocked(true);
+		player->SetAutoMove(false); //일단 깃발 내려올 때까지는 대기.
+	}
+
+	if (flagPole)
+	{
+		flagPole->StartLoawering();
+	}
+}
+
+void GameLevel::UpdateClearing(float deltaTime)
+{
+	// 플레이어 찾기.
+	Player* player = nullptr;
+	for (Actor* a : actors)
+	{
+		if (a && a->IsTypeOf<Player>())
+		{
+			player = a->As<Player>();
+			break;
+		}
+	}
+
+	if (!player) return;
+
+	switch (clearPhase)
+	{
+	case ClearPhase::LowerFlag:
+	{
+		// 깃발 다 내려오면 자동 걷기 시작.
+		if (!flagPole || flagPole->IsLoweredDone())
+		{
+			clearPhase = ClearPhase::AutoWalkToCastle;
+			player->SetAutoMove(true);
+			player->SetAutoMoveDir(+1);
+			player->SetAutoMoveSpeed(clearWalkSpeed);
+		}
+		break;
+	}
+	case ClearPhase::AutoWalkToCastle:
+	{
+		if (!castle)
+		{
+			clearPhase = ClearPhase::Done;
+			break;
+		}
+
+		const float px = player->GetPosition().x;
+		const float targetX = castle->GetPosition().x - walkStopDistance;
+
+		if (px >= targetX)
+		{
+			player->SetAutoMove(false);
+			player->SetInputLocked(false);
+			clearPhase = ClearPhase::Done;
+		}
+		break;
+	}
+
+	case ClearPhase::Done:
+	default:
+	{
+		// 여기서 다음 스테이지/결과 처리
+		// isClearing = false;  // 다음 단계로 넘어갈거면 해제
+		break;
+	}
 	}
 }
 

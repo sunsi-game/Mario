@@ -33,12 +33,13 @@ Player::~Player()
 void Player::Tick(float deltaTime) 
 { 
 	super::Tick(deltaTime); 
+
 	// 종료 처리. 
 	if (Input::Get().GetKeyDown(VK_ESCAPE)) 
 	{ // 게임 종료. 
 		QuitGame();
 	} 
-
+	
 	// 경과 시간 업데이트.
 	//elapsedTime += deltaTime; 
 	timer.Tick(deltaTime); 
@@ -54,13 +55,13 @@ void Player::Tick(float deltaTime)
 	// 점프는 "한 번 눌렀을 때"만 
 	if (Input::Get().GetKeyDown('w') || Input::Get().GetKeyDown(VK_SPACE))
 		TryJump();
-
+	
 	// 중력 + 위치 적용 
 	ApplyGravityAndMove(deltaTime); 
-
-
+	
+	
 	//MoveAndCollide(deltaTime);
-
+	//
 	// 플레이어 모드 전환. 
 	/*if (Input::Get().GetKeyDown('R'))
 	{ 

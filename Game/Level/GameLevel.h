@@ -8,12 +8,23 @@ using namespace KhyMario;
 
 //전방 선언.
 class FlagPole;
+class Castle;
+class Player;
 
 enum class LevelState
 {
 	Playing,
 	Clearing,
 	Cleared,
+};
+
+// 연출.
+enum class ClearPhase
+{
+	None,
+	LowerFlag,
+	AutoWalkToCastle,
+	Done
 };
 
 class GameLevel : public Level
@@ -39,6 +50,10 @@ private:
 	// 충돌 판정 처리 함수.
 	void ProcessCollisionPlayerBulletAndEnemy();
 	void ProcessCollisionPlayerAndEnemyBullet();
+
+	// 게임 클리어 시.
+	void StartClearSequence();
+	void UpdateClearing(float deltaTime);
 
 
 	// 점수 보여주는 함수.
@@ -77,6 +92,17 @@ private:
 	int debugPlayerX = 0;
 	char buf[128] = {};
 
+	// 게임 클리어.
+	Castle* castle = nullptr;
 	FlagPole* flagPole = nullptr;
 	bool isClearing = false;
+	Player* player = nullptr;
+
+	bool isCleared = false;
+
+	ClearPhase clearPhase = ClearPhase::None;
+
+	// 자동 걷기.
+	float clearWalkSpeed = 6.0f; 
+	float walkStopDistance = 1.0f; // 성 앞에서 멈출 거리.
 };

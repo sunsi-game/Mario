@@ -23,6 +23,11 @@ public:
 	Player(const Vector2& startPos);
 	~Player();
 
+	void SetInputLocked(bool v) { inputLocked = v; }
+	void SetAutoMove(bool v) { autoMove = v; }
+	void SetAutoMoveDir(int d) { autoMoveDir = d; }
+	void SetAutoMoveSpeed(float s) { autoMoveSpeed = s; }
+
 private:
 	virtual void Tick(float deltaTime) override;
 
@@ -64,4 +69,9 @@ private:
 
 	// 타이머 변수.
 	Timer timer;
+
+	bool inputLocked = false;
+	bool autoMove = false;
+	int autoMoveDir = 1;
+	float autoMoveSpeed = 6.0f;
 };
