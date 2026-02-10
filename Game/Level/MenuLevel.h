@@ -40,6 +40,15 @@ public :
 	virtual void Tick(float deltaTime) override;
 	virtual void Draw() override;
 
+	// 가로줄 그리기.
+	static void DrawHLine(int x, int y, int w, const char* ch, Color c);
+
+	// 직사각형 테두리.
+	static void DrawBrickFrame(int x, int y, int w, int h, Color c);
+
+	// 파이프 그리기.
+	static void DrawPipe(int x, int y, int height);
+
 private :
 	// 현재 활성화된 메뉴 아이템 인덱스.
 	int currentIndex = 0;
@@ -52,5 +61,10 @@ private :
 
 	// 메뉴 아이템 배열.
 	std::vector<MenuItem*> items;
+
+	// 깜빡 애니메이션.
+	// 시간 누적해서 토글.
+	float animTime = 0.0f;
+	bool coinBig = false;
 };
 

@@ -58,29 +58,7 @@ void GameLevel::Tick(float deltaTime)
         float maxCamera = levelWidth - (float)Engine::Get().GetWidth();
         if (maxCamera < 0) maxCamera = 0;
 
-<<<<<<< HEAD
-			// Å¬¸®¾î ½ÃÄö½º ½ÃÀÛ.
-			StartClearSequence();
-			UpdateClearing(deltaTime);
-		}
 	}
-=======
-        if (cameraX > maxCamera) cameraX = maxCamera;
-    }
->>>>>>> 27065cc (feat : ì”¬ ì „í™˜ ì˜¤ë¥˜ í•´ê²°)
-
-    //// Å¬¸®¾î ÁøÇà ÁßÀÌ¸é ¿¬Ãâ¸¸ ¾÷µ¥ÀÌÆ®ÇÏ°í ³ª¸ÓÁö Ãæµ¹/ÀüÅõ´Â ¸ØÃß´Â °Ô º¸Åë ¸¶¸®¿À ´À³¦
-    //if (isClearing)
-    //{
-    //    UpdateClearing(deltaTime);
-    //
-    //    // ¸Å´ÏÀú Tick (ESC/ÀüÈ¯ ÇÃ·¡±× Ã³¸®)
-    //    GameManager::Get().Tick();
-    //
-    //    if (player) debugPlayerX = (int)player->GetPosition().x;
-    //    return;
-    //}
-
     // ±ê¹ß Æ®¸®°Å(Å¬¸®¾î ½ÃÀÛ)
     if (!isPlayerDead && player && flagPole && !isClearing)
     {
@@ -93,11 +71,9 @@ void GameLevel::Tick(float deltaTime)
     // ¸Å´ÏÀú Tick (ESC/ÀüÈ¯ ÇÃ·¡±× Ã³¸®)
     GameManager::Get().Tick();
 
-
-
-    // Ãæµ¹ ÆÇÁ¤ Ã³¸®.
-    ProcessCollisionPlayerBulletAndEnemy();
-    ProcessCollisionPlayerAndEnemyBullet();
+    ProcessCollisionPlayerAndPiranha();
+    ProcessCollisionPlayerAndGoomba();
+    ProcessCollisionPlayerHeadHitBlocks();
 
     if (player) debugPlayerX = (int)player->GetPosition().x;
 }
@@ -113,45 +89,6 @@ void GameLevel::Draw()
     ShowScore();
 }
 
-void GameLevel::ProcessCollisionPlayerBulletAndEnemy()
-{
-    // TODO: ³Ê ·ÎÁ÷ ºÙÀÌ¸é µÊ.
-}
-
-void GameLevel::ProcessCollisionPlayerAndEnemyBullet()
-{
-    Player* player = nullptr;
-    std::vector<Actor*> bullets;
-
-    for (Actor* const actor : actors)
-    {
-        if (!player && actor && actor->IsTypeOf<Player>())
-        {
-            player = actor->As<Player>();
-            continue;
-        }
-        // bullets ÇÊÅÍ¸µ ·ÎÁ÷ ÀÖÀ¸¸é ¿©±â¼­
-    }
-
-    if (bullets.size() == 0 || !player)
-        return;
-
-    for (Actor* const bullet : bullets)
-    {
-        if (bullet && bullet->TestIntersect(player))
-        {
-            isPlayerDead = true;
-            playerDeadPosition = player->GetPosition();
-
-            player->Destroy();
-            bullet->Destroy();
-
-            // Á×À½ Ã³¸®(¸ñ¼û/Àç½ÃÀÛ/¿£µù)Àº ¸Å´ÏÀú·Î
-            GameManager::Get().OnPlayerDied();
-            break;
-        }
-    }
-}
 
 void GameLevel::StartClearSequence()
 {
@@ -265,93 +202,7 @@ void GameLevel::UpdateClearing(float deltaTime)
     }
 }
 
-void GameLevel::StartClearSequence()
-{
-	if (isClearing) return;
-	isClearing = true;
-	clearPhase = ClearPhase::LowerFlag;
 
-	// ÇÃ·¹ÀÌ¾î Ã£¾Æ¼­ ÀÔ·Â Àá±Ý + ÀÚµ¿ ¿¬Ãâ ÁØºñ.
-	Player* player = nullptr;
-	for (Actor* a : actors)
-	{
-		if (a && a->IsTypeOf<Player>())
-		{
-			player = a->As<Player>();
-			break;
-		}
-	}
-
-	if (player)
-	{
-		player->SetInputLocked(true);
-		player->SetAutoMove(false); //ÀÏ´Ü ±ê¹ß ³»·Á¿Ã ¶§±îÁö´Â ´ë±â.
-	}
-
-	if (flagPole)
-	{
-		flagPole->StartLoawering();
-	}
-}
-
-void GameLevel::UpdateClearing(float deltaTime)
-{
-	// ÇÃ·¹ÀÌ¾î Ã£±â.
-	Player* player = nullptr;
-	for (Actor* a : actors)
-	{
-		if (a && a->IsTypeOf<Player>())
-		{
-			player = a->As<Player>();
-			break;
-		}
-	}
-
-	if (!player) return;
-
-	switch (clearPhase)
-	{
-	case ClearPhase::LowerFlag:
-	{
-		// ±ê¹ß ´Ù ³»·Á¿À¸é ÀÚµ¿ °È±â ½ÃÀÛ.
-		if (!flagPole || flagPole->IsLoweredDone())
-		{
-			clearPhase = ClearPhase::AutoWalkToCastle;
-			player->SetAutoMove(true);
-			player->SetAutoMoveDir(+1);
-			player->SetAutoMoveSpeed(clearWalkSpeed);
-		}
-		break;
-	}
-	case ClearPhase::AutoWalkToCastle:
-	{
-		if (!castle)
-		{
-			clearPhase = ClearPhase::Done;
-			break;
-		}
-
-		const float px = player->GetPosition().x;
-		const float targetX = castle->GetPosition().x - walkStopDistance;
-
-		if (px >= targetX)
-		{
-			player->SetAutoMove(false);
-			player->SetInputLocked(false);
-			clearPhase = ClearPhase::Done;
-		}
-		break;
-	}
-
-	case ClearPhase::Done:
-	default:
-	{
-		// ¿©±â¼­ ´ÙÀ½ ½ºÅ×ÀÌÁö/°á°ú Ã³¸®
-		// isClearing = false;  // ´ÙÀ½ ´Ü°è·Î ³Ñ¾î°¥°Å¸é ÇØÁ¦
-		break;
-	}
-	}
-}
 
 std::vector<Actor*>& GameLevel::GetActors()
 {
@@ -533,4 +384,158 @@ void GameLevel::LoadMap(const char* filename)
 
     delete[] data;
     fclose(file);
+}
+
+void GameLevel::ProcessCollisionPlayerAndPiranha()
+{
+    Player* player = nullptr;
+    std::vector<Actor*> plants;
+
+    for (Actor* a : actors)
+    {
+        if (!a) continue;
+
+        if (!player && a->IsTypeOf<Player>())
+            player = a->As<Player>();
+        else if (a->IsTypeOf<PiranhaPlant>())
+            plants.push_back(a);
+    }
+
+    if (!player) return;
+
+    for (Actor* plant : plants)
+    {
+        if (plant && plant->TestIntersect(player))
+        {
+            player->Destroy();
+            GameManager::Get().OnPlayerDied();
+            return;
+        }
+    }
+}
+
+void GameLevel::ProcessCollisionPlayerAndGoomba()
+{
+    Player* player = nullptr;
+    std::vector<Goomba*> goombas;
+
+    for (Actor* a : actors)
+    {
+        if (!a) continue;
+
+        if (!player && a->IsTypeOf<Player>())
+            player = a->As<Player>();
+        else if (a->IsTypeOf<Goomba>())
+            goombas.push_back(a->As<Goomba>());
+    }
+
+    if (!player) return;
+
+    const Vector2 prevP = player->GetPrevPosition();
+    const Vector2 curP = player->GetPosition();
+
+    const float prevBottom = prevP.y + player->GetHeight();
+    const float curBottom = curP.y + player->GetHeight();
+    const float playerLeft = curP.x;
+    const float playerRight = curP.x + player->GetWidth();
+
+    // ¾Æ·¡·Î ¶³¾îÁú ¶§ vy°¡ +·Î Ä¿Áö´Â ±¸Á¶.
+    const float vy = player->GetVy();
+    const float stompMinFallSpeed = 1.0f;
+
+    for (Goomba* g : goombas)
+    {
+        if (!g) continue;
+
+        if (!g->TestIntersect(player))
+            continue;
+
+        const Vector2 gp = g->GetPosition();
+        const float gTop = gp.y;
+        const float gLeft = gp.x;
+        const float gRight = gp.x + g->GetWidth();
+
+        const bool overlapX = (playerRight > gLeft) && (playerLeft < gRight);
+
+        // ÂðÂ¥·Î ¹â±â ÆÇÁ¤.
+        const bool movedDownThisFrame = (curBottom > prevBottom);
+        const bool crossedTopFromAbove = (prevBottom < gTop) && (curBottom >= gTop);
+        const bool fallingFastEnough = (vy > stompMinFallSpeed);
+        const bool stomp = overlapX && movedDownThisFrame && crossedTopFromAbove && fallingFastEnough;
+
+        if (stomp)
+        {
+            g->Destroy();                 //  ±À¹Ù »èÁ¦
+            player->Bounce(-40.0f);        // À§·Î Æ¨±â±â (°ªÀº °¨À¸·Î Á¶Àý)
+            return;
+        }
+        player->Destroy();
+        GameManager::Get().OnPlayerDied();
+       return;
+        
+    }
+}
+
+void GameLevel::ProcessCollisionPlayerHeadHitBlocks()
+{
+    Player* player = nullptr;
+
+    for (Actor* a : actors)
+    {
+        if (a && a->IsTypeOf<Player>())
+        {
+            player = a->As<Player>();
+            break;
+        }
+    }
+    if (!player) return;
+
+    // À§·Î ¿Ã¶ó°¡´Â ÁßÀÏ ¶§¸¸(¸Ó¸® ¹Ú±â)
+    if (player->GetVy() >= 0.0f) return; // vy<0ÀÌ¸é À§·Î ÀÌµ¿(³Ê ±âÁØ¿¡ ¸ÂÃç)
+
+    const Vector2 prevP = player->GetPrevPosition();
+    const Vector2 curP = player->GetPosition();
+
+    const float prevTop = prevP.y;              // ¸Ó¸® y
+    const float curTop = curP.y;
+
+    const float playerLeft = curP.x;
+    const float playerRight = curP.x + player->GetWidth();
+
+    for (Actor* a : actors)
+    {
+        if (!a) continue;
+        if (!a->IsTypeOf<Block>()) continue;
+
+        // ¹Ù´ÚÀº Á¦¿Ü (¿øÇÏ¸é Pipeµµ Á¦¿Ü)
+        if (a->IsTypeOf<Ground>()) continue;
+
+        Block* b = a->As<Block>();
+        if (!b) continue;
+
+        const Vector2 bp = b->GetPosition();
+        const float blockBottom = bp.y + b->GetHeight();
+        const float blockLeft = bp.x;
+        const float blockRight = bp.x + b->GetWidth();
+
+        const bool overlapX = (playerRight > blockLeft) && (playerLeft < blockRight);
+
+        // ¸Ó¸® ¹Ú±â: ÀÌÀü ÇÁ·¹ÀÓ ¸Ó¸®°¡ ºí·Ï ¹Ù´Ú ¾Æ·¡¿´°í, ÀÌ¹ø ÇÁ·¹ÀÓ¿¡ ¹Ù´ÚÀ» Åë°ú
+        const bool headHit = overlapX && (prevTop >= blockBottom) && (curTop <= blockBottom);
+
+        if (headHit)
+        {
+            b->Destroy(); // ºí·Ï »èÁ¦
+
+            // ÇÃ·¹ÀÌ¾î°¡ ºí·Ï ¾ÈÀ¸·Î ÆÄ°íµéÁö ¾Ê°Ô À§Ä¡ º¸Á¤(¼±ÅÃ)
+            Vector2 p = player->GetPosition();
+            p.y = blockBottom;
+            player->SetPosition(p); // SetPosition ¾øÀ¸¸é player->position Á÷Á¢ ¼öÁ¤
+
+            // À§·Î ¼Óµµ ²ª±â(¼±ÅÃ)
+            // player->Bounce(0) °°Àº °É ¸¸µé¾îµµ µÊ
+
+            return;
+        }
+    }
 }

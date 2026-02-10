@@ -23,10 +23,18 @@ public:
 	Player(const Vector2& startPos);
 	~Player();
 
-	void SetInputLocked(bool v) { inputLocked = v; }
-	void SetAutoMove(bool v) { autoMove = v; }
-	void SetAutoMoveDir(int d) { autoMoveDir = d; }
-	void SetAutoMoveSpeed(float s) { autoMoveSpeed = s; }
+	inline void SetInputLocked(bool v) { inputLocked = v; }
+	inline void SetAutoMove(bool v) { autoMove = v; }
+	inline void SetAutoMoveDir(int d) { autoMoveDir = d; }
+	inline void SetAutoMoveSpeed(float s) { autoMoveSpeed = s; }
+
+	inline float GetVy() const { return vy; }
+
+	inline Vector2 GetPrevPosition() const { return prevPosition; }
+
+	// ¹à±â ¹Ù¿î½º¿ë.
+	void Bounce(float velocity);
+	
 
 private:
 	virtual void Tick(float deltaTime) override;
@@ -47,6 +55,7 @@ private:
 
 	float GetWorldWidth() const;
 
+	
 
 private:
 	//ÇöÀç y ¹æÇâ ¼Óµµ.
@@ -70,17 +79,13 @@ private:
 	// Å¸ÀÌ¸Ó º¯¼ö.
 	Timer timer;
 
-<<<<<<< HEAD
-	bool inputLocked = false;
-	bool autoMove = false;
-	int autoMoveDir = 1;
-	float autoMoveSpeed = 6.0f;
-=======
 	float posX = 0.0f;
 
 	bool inputLocked = false;
 	bool autoMove = false;
 	int autoMoveDir = 1;
 	float autoMoveSpeed = 2.0f;
->>>>>>> 27065cc (feat : ì”¬ ì „í™˜ ì˜¤ë¥˜ í•´ê²°)
+
+	// Ãæµ¹ Ã³¸®¿ë.
+	Vector2 prevPosition;
 };

@@ -35,32 +35,11 @@ Player::~Player()
 
 void Player::Tick(float deltaTime) 
 { 
+	// ÇÁ·¹ÀÓ ÀÌµ¿Àü¿¡ ÀúÀå.
+	prevPosition = position;
+
 	super::Tick(deltaTime); 
 
-<<<<<<< HEAD
-	// Á¾·á Ã³¸®. 
-	if (Input::Get().GetKeyDown(VK_ESCAPE)) 
-	{ // °ÔÀÓ Á¾·á. 
-		QuitGame();
-	} 
-	
-	// °æ°ú ½Ã°£ ¾÷µ¥ÀÌÆ®.
-	//elapsedTime += deltaTime; 
-	timer.Tick(deltaTime); 
-	//// ÁÂ¿ì ¹æÇâÅ° ÀÔ·ÂÃ³¸®. 
-	if (Input::Get().GetKey(VK_LEFT)) 
-	{ 
-	 MoveLeft(); 
-	} 
-	if (Input::Get().GetKey(VK_RIGHT)) 
-	{ 
-	 MoveRight();
-	} 
-	// Á¡ÇÁ´Â "ÇÑ ¹ø ´­·¶À» ¶§"¸¸ 
-	if (Input::Get().GetKeyDown('w') || Input::Get().GetKeyDown(VK_SPACE))
-		TryJump();
-	
-=======
 	// °æ°ú ½Ã°£ ¾÷µ¥ÀÌÆ®.
 	//elapsedTime += deltaTime; 
 	timer.Tick(deltaTime); 
@@ -87,7 +66,6 @@ void Player::Tick(float deltaTime)
 		position.x = (int)posX;
 	}
 
->>>>>>> 27065cc (feat : ì”¬ ì „í™˜ ì˜¤ë¥˜ í•´ê²°)
 	// Áß·Â + À§Ä¡ Àû¿ë 
 	ApplyGravityAndMove(deltaTime); 
 	
@@ -218,4 +196,10 @@ float Player::GetWorldWidth() const
 	Level* level = Engine::Get().GetMainLevel();
 	GameLevel* gl = level ? level->As<GameLevel>() : nullptr;
 	return gl ? gl->GetLevelWidth() : (float)Engine::Get().GetWidth();
+}
+
+void Player::Bounce(float velocity)
+{
+	vy = velocity;
+	Grounded = false;
 }
