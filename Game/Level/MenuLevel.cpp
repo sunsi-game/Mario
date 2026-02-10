@@ -8,6 +8,7 @@
 
 MenuLevel::MenuLevel()
 {
+
 	// 메뉴 아이템 생성.
 	items.emplace_back(new MenuItem(
 		"Start",
@@ -44,6 +45,8 @@ MenuLevel::~MenuLevel()
 void MenuLevel::Tick(float deltaTime)
 {
 	super::Tick(deltaTime);
+
+	Renderer::Get().SetCameraOffset(Vector2::Zero);
 
 	animTime += deltaTime;
 	if (animTime >= 0.25f) // 0.25초마다 토글.
