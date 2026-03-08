@@ -7,5 +7,6 @@
 - [프로젝트 자료.pptx](https://github.com/user-attachments/files/25786841/default.pptx)
 
 ## 시연 영상
-- [프로젝트 시연 영상] https://github.com/user-attachments/assets/f2444120-0554-4377-9bfa-999878dfff2c
+- [프로젝트 시연 영상]
+https://github.com/user-attachments/assets/f2444120-0554-4377-9bfa-999878dfff2c
 
